@@ -3,8 +3,13 @@ import './Auth.scss';
 
 function Auth() {
   return (
-    <div className="Auth">
-        Hii
+    <div className="weavemail-auth-widget">
+      <div className="widget-main-container">
+          <div className="widget-container">
+            Hii
+          </div>
+      </div>
+
     </div>
   );
 }
