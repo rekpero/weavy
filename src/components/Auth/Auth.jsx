@@ -6,7 +6,15 @@ function Auth() {
     <div className="weavemail-auth-widget">
       <div className="widget-main-container">
           <div className="widget-container">
-            Hii
+            <div>
+              <h2>Weavemail</h2>
+            </div>
+            <div>
+              <input class="clickable" type="file" id="file" onchange="login(this.files)" />
+              <div id="desc">Drop a wallet keyfile to login</div>
+            </div>
+            <div></div>
+            <div></div>
           </div>
       </div>
 
