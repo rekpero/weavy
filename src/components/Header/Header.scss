@@ -1,0 +1,51 @@
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0.9em 0em;
+  border-bottom: 1px solid #c7c7c791;
+  .logo-container {
+    width: 15%;
+    .logo-name {
+      margin: 0;
+      padding-inline-start: 2em;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--labelColor);
+    }
+  }
+  .search-bar-container {
+    flex-grow: 1;
+    .search-bar {
+      width: 50%;
+      padding: 0.75em 2em;
+      border-radius: 6px;
+      background: #f2f3f4;
+      display: flex;
+      align-items: center;
+      .search-bar-input {
+        border: 0;
+        background: transparent;
+        font-size: 18px;
+        outline: none;
+        flex: 1;
+        padding-inline-start: 1em;
+      }
+    }
+  }
+  .user-profile-container {
+    margin-inline-end: 1.3em;
+    display: flex;
+    align-items: center;
+    .notification-container {
+      margin-right: 1em;
+      color: var(--labelColor);
+      font-size: 20px;
+    }
+    .user-profile-blockie-icon {
+      height: 42px;
+      width: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  }
+}

@@ -1,0 +1,207 @@
+.mailbox-top-bar {
+  display: flex;
+  align-items: center;
+  padding: 0.4em 0.9em;
+  height: 36.23px;
+  border-bottom: 1px solid #c7c7c791;
+  .mailbox-top-bar-left {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+
+    .select-all-container {
+      width: 28px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
+
+      $checkbox-size: 12px;
+      $margin: 8px;
+      $margin-small: $margin / 2;
+      $text-lighter: var(--labelColor);
+      $brand: var(--labelColor);
+
+      input {
+        position: relative !important;
+        appearance: none;
+        box-sizing: content-box;
+        overflow: hidden;
+        outline: none;
+        cursor: pointer;
+
+        // circle
+        &:before {
+          content: "";
+          display: block;
+          box-sizing: content-box;
+          width: $checkbox-size;
+          height: $checkbox-size;
+          border: 2px solid $text-lighter;
+          transition: 0.2s border-color ease;
+        }
+
+        &:checked:before {
+          border-color: $brand;
+          transition: 0.5s border-color ease;
+        }
+
+        &:disabled:before {
+          border-color: $text-lighter;
+          background-color: $text-lighter;
+        }
+
+        // dot
+        &:after {
+          content: "";
+          display: block;
+          position: absolute;
+          box-sizing: content-box;
+          top: 50%;
+          left: 50%;
+          transform-origin: 50% 50%;
+          background-color: $brand;
+          width: $checkbox-size;
+          height: $checkbox-size;
+          border-radius: 100vh;
+          transform: translate(-50%, -50%) scale(0);
+        }
+
+        &[type="checkbox"] {
+          &:before {
+            border-radius: $checkbox-size / 4;
+          }
+
+          &:after {
+            width: $checkbox-size * 0.6;
+            height: $checkbox-size;
+            border-radius: 0;
+            transform: translate(-50%, -85%) scale(0) rotate(45deg);
+            background-color: transparent;
+            box-shadow: 4px 4px 0px 0px $brand;
+          }
+
+          &:checked:after {
+            animation: toggleOnCheckbox 0.2s ease forwards;
+          }
+        }
+
+        &[type="checkbox"].filled {
+          &:before {
+            border-radius: $checkbox-size / 4;
+            transition: 0.2s border-color ease, 0.2s background-color ease;
+          }
+
+          &:checked:not(:disabled):before {
+            background-color: $brand;
+          }
+
+          &:not(:disabled):after {
+            box-shadow: 4px 4px 0px 0px white;
+          }
+        }
+      }
+
+      @keyframes toggleOnCheckbox {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -85%) scale(0) rotate(45deg);
+        }
+
+        70% {
+          opacity: 1;
+          transform: translate(-50%, -85%) scale(0.9) rotate(45deg);
+        }
+
+        100% {
+          transform: translate(-50%, -85%) scale(0.8) rotate(45deg);
+        }
+      }
+    }
+
+    .reload-container {
+      margin-left: 2em;
+      color: var(--labelColor);
+      height: 36px;
+      width: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
+    }
+  }
+
+  .mailbox-top-bar-right {
+    display: flex;
+    align-items: center;
+
+    .pagination-content-container {
+      font-weight: 500;
+      color: var(--labelColor);
+      width: 92px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
+    }
+
+    .pagination-left-container {
+      margin-left: 1.5em;
+      color: var(--labelColor);
+      height: 36px;
+      width: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
+    }
+
+    .pagination-right-container {
+      margin-left: 1.5em;
+      color: var(--labelColor);
+      height: 36px;
+      width: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
+    }
+
+    .pagination-menu-container {
+      margin-left: 1.5em;
+      color: var(--labelColor);
+      height: 36px;
+      width: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
+    }
+  }
+}

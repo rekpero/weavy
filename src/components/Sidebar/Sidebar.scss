@@ -1,0 +1,61 @@
+.sidebar {
+  width: 15%;
+  border-right: 1px solid #c7c7c791;
+  color: var(--labelColor);
+  .mail-compose-container {
+    margin: 1em;
+    height: 42px;
+    background: var(--themeColor);
+    color: var(--white);
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: none;
+    border: 1px solid var(--themeColor);
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+      box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+      border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    box-shadow: 2px 4px 15px 0 #9b4dca94;
+    display: flex;
+    align-items: center;
+    transition: all 0.5s;
+    width: 91%;
+    padding: 0;
+    .compose-icon {
+      padding: 0px 18px 5px 18px;
+      font-size: 26px;
+      font-weight: 300;
+      border-right: 0.5px solid;
+    }
+
+    .compose-title {
+      margin: 0px auto;
+      font-size: 17px;
+      font-weight: 400;
+    }
+
+    &:hover {
+      transform: scale(1.04);
+      box-shadow: 4px 6px 18px 0 #9b4dca94;
+    }
+  }
+
+  .sidebar-item {
+    padding: 0.4em 1em;
+    cursor: pointer;
+    display: flex;
+    transition: all 0.25s linear;
+    .sidebar-item-main {
+      flex-grow: 1;
+      .sidebar-item-title {
+        margin-left: 8px;
+      }
+    }
+    .sidebar-item-number {
+    }
+
+    &:hover {
+      background-color: var(--hoverBackground);
+      border-left: 4px solid;
+    }
+  }
+}

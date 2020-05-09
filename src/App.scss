@@ -9,9 +9,10 @@
   --bodyBg: #c7c7c7;
   --white: #fff;
   --black: #000;
-  --themeColor: #028c73;
-  --themeColorDark: #000e1c;
+  --themeColor: #9b4dca;
+  --themeColorDark: #6a2396;
   --labelColor: #737373;
+  --hoverBackground: rgba(197, 197, 197, 0.28);
 }
 
 .App {
@@ -20,6 +21,9 @@
   color: var(--textColor);
   line-height: 1.5;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .alert {
