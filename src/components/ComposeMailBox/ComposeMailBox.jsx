@@ -3,9 +3,32 @@ import "./ComposeMailBox.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faMinus } from "@fortawesome/free-solid-svg-icons";
 import MailEditor from "../MailEditor";
+import { ActionContext } from "../../hook";
 
 function ComposeMailBox() {
+  const { toggleComposeMail } = React.useContext(ActionContext);
+
   const [collapse, setCollapse] = React.useState(false);
+  const [recipient, setRecipient] = React.useState("");
+  const [subject, setSubject] = React.useState("");
+  const [amount, setAmount] = React.useState("");
+  const [content, setContent] = React.useState("");
+
+  const sendMail = async () => {
+    const stringifyContent = JSON.stringify(content);
+    console.log(stringifyContent);
+    const parsedContent = JSON.parse(stringifyContent);
+    console.log(parsedContent);
+    console.log(recipient, subject, content, amount);
+  };
+
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [{ text: "" }],
+    },
+  ];
+
   return (
     <div className="compose-mail-box">
       <div
@@ -19,7 +42,10 @@ function ComposeMailBox() {
         >
           <FontAwesomeIcon icon={faMinus} />
         </div>
-        <div className="compose-mail-header-close">
+        <div
+          className="compose-mail-header-close"
+          onClick={(e) => toggleComposeMail(false)}
+        >
           <FontAwesomeIcon icon={faTimes} />
         </div>
       </div>
@@ -30,6 +56,7 @@ function ComposeMailBox() {
               type="text"
               placeholder="Recipient"
               className="compose-body-recipient-input"
+              onChange={(e) => setRecipient(e.target.value)}
             />
           </div>
           <div className="compose-body-subject">
@@ -37,14 +64,27 @@ function ComposeMailBox() {
               type="text"
               placeholder="Subject"
               className="compose-body-subject-input"
+              onChange={(e) => setSubject(e.target.value)}
+            />
+          </div>
+          <div className="compose-body-amount">
+            <input
+              type="number"
+              placeholder="0 Ar"
+              className="compose-body-amount-input"
+              onChange={(e) => setAmount(e.target.value)}
             />
           </div>
           <div className="compose-body-content">
-            <MailEditor />
+            <MailEditor onValueChange={(value) => setContent(value)} />
           </div>
           <div className="compose-body-buttons-container">
             <div className="send-button-container">
-              <button type="button" className="send-mail-button">
+              <button
+                type="button"
+                className="send-mail-button"
+                onClick={sendMail}
+              >
                 Send
               </button>
             </div>

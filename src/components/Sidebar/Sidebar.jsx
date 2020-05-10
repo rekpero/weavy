@@ -6,11 +6,17 @@ import {
   faStar,
   faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
+import { ActionContext } from "../../hook";
 
 function Sidebar() {
+  const { toggleComposeMail } = React.useContext(ActionContext);
+
   return (
     <div className="sidebar">
-      <button className="mail-compose-container">
+      <button
+        className="mail-compose-container"
+        onClick={(e) => toggleComposeMail(true)}
+      >
         <span className="compose-icon">+</span>
         <span className="compose-title">Compose</span>
       </button>

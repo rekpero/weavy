@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from "react";
-import "./MailEditor.scss";
+import React, { useCallback, useState, useMemo } from "react";
+import "./ReadonlyEditor.scss";
 import isHotkey from "is-hotkey";
 import { Editable, withReact, useSlate, Slate } from "slate-react";
 import { Editor, Transforms, createEditor } from "slate";
@@ -16,8 +16,8 @@ const HOTKEYS = {
 
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
-function MailEditor({ onValueChange }) {
-  const [value, setValue] = useState(initialValue);
+function ReadonlyEditor({ onValueChange, content }) {
+  const [value, setValue] = useState(content);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
@@ -39,6 +39,7 @@ function MailEditor({ onValueChange }) {
         <Editable
           renderElement={renderElement}
           renderLeaf={renderLeaf}
+          readOnly
           placeholder=""
           spellCheck
           autoFocus
@@ -53,17 +54,6 @@ function MailEditor({ onValueChange }) {
             }
           }}
         />
-        <Toolbar>
-          <MarkButton format="bold" icon="format_bold" />
-          <MarkButton format="italic" icon="format_italic" />
-          <MarkButton format="underline" icon="format_underlined" />
-          <MarkButton format="code" icon="code" />
-          <BlockButton format="heading-one" icon="looks_one" />
-          <BlockButton format="heading-two" icon="looks_two" />
-          <BlockButton format="block-quote" icon="format_quote" />
-          <BlockButton format="numbered-list" icon="format_list_numbered" />
-          <BlockButton format="bulleted-list" icon="format_list_bulleted" />
-        </Toolbar>
       </Slate>
     </div>
   );
@@ -183,8 +173,38 @@ const MarkButton = ({ format, icon }) => {
 const initialValue = [
   {
     type: "paragraph",
-    children: [{ text: "" }],
+    children: [
+      { text: "This is editable " },
+      { text: "rich", bold: true },
+      { text: " text, " },
+      { text: "much", italic: true },
+      { text: " better than a " },
+      { text: "<textarea>", code: true },
+      { text: "!" },
+    ],
+  },
+  {
+    type: "paragraph",
+    children: [
+      {
+        text:
+          "Since it's rich text, you can do things like turn a selection of text ",
+      },
+      { text: "bold", bold: true },
+      {
+        text:
+          ", or add a semantically rendered block quote in the middle of the page, like this:",
+      },
+    ],
+  },
+  {
+    type: "block-quote",
+    children: [{ text: "A wise quote." }],
+  },
+  {
+    type: "paragraph",
+    children: [{ text: "Try it out for yourself!" }],
   },
 ];
 
-export default MailEditor;
+export default ReadonlyEditor;

@@ -3,10 +3,53 @@ import "./ViewMail.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import makeBlockie from "ethereum-blockies-base64";
-import { faTrash, faReply, faShare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrash,
+  faReply,
+  faShare,
+  faWallet,
+} from "@fortawesome/free-solid-svg-icons";
 import MailEditor from "../MailEditor";
+import ReadonlyEditor from "../ReadonlyEditor";
 
 function ViewMail() {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [
+        { text: "This is editable " },
+        { text: "rich", bold: true },
+        { text: " text, " },
+        { text: "much", italic: true },
+        { text: " better than a " },
+        { text: "<textarea>", code: true },
+        { text: "!" },
+      ],
+    },
+    {
+      type: "paragraph",
+      children: [
+        {
+          text:
+            "Since it's rich text, you can do things like turn a selection of text ",
+        },
+        { text: "bold", bold: true },
+        {
+          text:
+            ", or add a semantically rendered block quote in the middle of the page, like this:",
+        },
+      ],
+    },
+    {
+      type: "block-quote",
+      children: [{ text: "A wise quote." }],
+    },
+    {
+      type: "paragraph",
+      children: [{ text: "Try it out for yourself!" }],
+    },
+  ];
+
   return (
     <div className="view-mail">
       <div className="view-mail-header">
@@ -89,7 +132,17 @@ function ViewMail() {
           </div>
           <div className="view-mail-body-content-container">
             <div className="view-mail-body-content-header">
-              <span className="view-mail-body-content-user">Mitra</span>
+              <span className="view-mail-body-content-user">
+                <span className="view-mail-body-content-user-name">Mitra</span>
+                <span className="view-mail-body-content-user-wallet">
+                  <span className="view-mail-body-content-wallet-icon">
+                    <FontAwesomeIcon icon={faWallet} />
+                  </span>
+                  <span className="view-mail-body-content-wallet-amount">
+                    2 AR
+                  </span>
+                </span>
+              </span>
               <span className="view-mail-body-content-time">Time</span>
               <span className="view-mail-body-content-trash">
                 <FontAwesomeIcon icon={faTrash} />
@@ -99,21 +152,7 @@ function ViewMail() {
               </span>
             </div>
             <div className="view-mail-body-content">
-              Hi All, I just learnt today is my last day at Quaero; I was
-              thinking I have another week and have enough time to personally
-              talk to you and say goodbye. Wow! this company never stops
-              surprising :P I just wanted to take a moment to say it had been a
-              great 4 years of journey at Quaero. It was a roller coaster ride;
-              definitely an enjoyable one.One thing for sure this has made me a
-              more confident and better person. It was a pleasure working with
-              you all.I have thoroughly enjoyed my time with this company and I
-              am grateful to have met each of you.I will deeply miss working
-              with each of you. I have thoroughly enjoyed breakout sessions and
-              our "after work parties" at office. I will cherish all beautiful
-              moments spent here Thank you again, and best of luck in all your
-              future endeavors! My personal email id is :
-              manishaa.singh1501@gmail.com contact number: +91-9739979759 Stay
-              in Touch DUAAO ME YAAD RAKHNA
+              <ReadonlyEditor content={initialValue}></ReadonlyEditor>
             </div>
             <div className="view-mail-body-action-container">
               <div className="view-mail-body-action-button">
@@ -145,6 +184,13 @@ function ViewMail() {
                 <FontAwesomeIcon icon={faReply} />
               </span>
               <span className="view-mail-body-content-user-reply">Mitra</span>
+            </div>
+            <div className="reply-body-amount">
+              <input
+                type="number"
+                placeholder="0 Ar"
+                className="reply-body-amount-input"
+              />
             </div>
             <div className="view-mail-body-content-reply-container">
               <MailEditor />

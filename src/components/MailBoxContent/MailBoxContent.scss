@@ -205,6 +205,7 @@
           cursor: pointer;
           position: absolute;
           right: 0;
+          bottom: 0;
           &:hover {
             background-color: var(--hoverBackground);
           }

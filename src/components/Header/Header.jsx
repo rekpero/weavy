@@ -3,8 +3,14 @@ import "./Header.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faBell } from "@fortawesome/free-solid-svg-icons";
 import makeBlockie from "ethereum-blockies-base64";
+import { ActionContext } from "../../hook";
 
 function Header() {
+  const { signOut } = React.useContext(ActionContext);
+  const [showDropdown, setShowDropdown] = React.useState(false);
+  const logout = () => {
+    signOut();
+  };
   return (
     <div className="header">
       <div className="logo-container">
@@ -20,7 +26,7 @@ function Header() {
         <div className="notification-container">
           <FontAwesomeIcon icon={faBell} />
         </div>
-        <div>
+        <div onClick={(e) => setShowDropdown(!showDropdown)}>
           <img
             src={makeBlockie("jeNnvxnU0qguF-xj3k1hMYlSHgEOMAxtpeYBwKy1r9k")}
             alt="address-blockie"
@@ -28,6 +34,27 @@ function Header() {
           />
         </div>
       </div>
+      {showDropdown && (
+        <div
+          className="dropdown-overlay"
+          onClick={(e) => setShowDropdown(false)}
+        ></div>
+      )}
+      {showDropdown && (
+        <div className="toolbar-dropdown-box">
+          <div className="dropdown-title">Logout from Wallet</div>
+          <div></div>
+          <div className="dropdown-menu-button-container">
+            <button
+              type="button"
+              onClick={logout}
+              className="dropdown-menu-button"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -80,6 +80,20 @@
       }
     }
 
+    .compose-body-amount {
+      display: flex;
+      padding: 6px 0px;
+      border-bottom: 1px solid #c7c7c791;
+      .compose-body-amount-input {
+        border: 0;
+        background: transparent;
+        font-size: 15px;
+        font-weight: 500;
+        outline: none;
+        flex: 1 1;
+      }
+    }
+
     .compose-body-content {
       display: flex;
       padding: 6px 0px;

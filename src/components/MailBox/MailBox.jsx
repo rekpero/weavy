@@ -10,7 +10,6 @@ function MailBox() {
         <MailBoxTopBar></MailBoxTopBar>
         <MailBoxContent></MailBoxContent>
       </div>
-      <div></div>
     </div>
   );
 }

@@ -47,11 +47,22 @@
           display: flex;
           .view-mail-body-content-user {
             flex: 1;
-            font-size: 18px;
-            font-weight: 500;
-            color: var(--black);
             display: flex;
             align-items: center;
+            .view-mail-body-content-user-name {
+              font-size: 18px;
+              font-weight: 500;
+              color: var(--black);
+            }
+            .view-mail-body-content-user-wallet {
+              margin-left: 1em;
+              .view-mail-body-content-wallet-icon {
+                margin-right: 0.5em;
+              }
+
+              .view-mail-body-content-wallet-amount {
+              }
+            }
           }
           .view-mail-body-content-user-reply {
             flex: 1;
@@ -99,6 +110,20 @@
             &:hover {
               background-color: var(--hoverBackground);
             }
+          }
+        }
+        .reply-body-amount {
+          display: flex;
+          padding: 6px 0px;
+          border-top: 1px solid #c7c7c791;
+          border-bottom: 1px solid #c7c7c791;
+          .reply-body-amount-input {
+            border: 0;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            flex: 1 1;
           }
         }
         .view-mail-body-content {
