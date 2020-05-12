@@ -8,55 +8,30 @@ import {
   faReply,
   faShare,
   faWallet,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import MailEditor from "../MailEditor";
 import ReadonlyEditor from "../ReadonlyEditor";
+import { StateContext, ActionContext } from "../../hook";
+import { shortenAddress } from "../../utils";
 
 function ViewMail() {
-  const initialValue = [
-    {
-      type: "paragraph",
-      children: [
-        { text: "This is editable " },
-        { text: "rich", bold: true },
-        { text: " text, " },
-        { text: "much", italic: true },
-        { text: " better than a " },
-        { text: "<textarea>", code: true },
-        { text: "!" },
-      ],
-    },
-    {
-      type: "paragraph",
-      children: [
-        {
-          text:
-            "Since it's rich text, you can do things like turn a selection of text ",
-        },
-        { text: "bold", bold: true },
-        {
-          text:
-            ", or add a semantically rendered block quote in the middle of the page, like this:",
-        },
-      ],
-    },
-    {
-      type: "block-quote",
-      children: [{ text: "A wise quote." }],
-    },
-    {
-      type: "paragraph",
-      children: [{ text: "Try it out for yourself!" }],
-    },
-  ];
-
+  const { selectMail } = React.useContext(ActionContext);
+  const { selectedMail } = React.useContext(StateContext);
+  const [showReply, setShowReply] = React.useState(false);
   return (
     <div className="view-mail">
       <div className="view-mail-header">
-        <h2 className="view-mail-header-subject">Integration Testing</h2>
+        <h2 className="view-mail-header-subject">{selectedMail.subject}</h2>
+        <span
+          className="view-mail-header-close"
+          onClick={(e) => selectMail(null)}
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </span>
       </div>
       <div className="view-mail-body-container">
-        <div className="view-mail-body-item">
+        {/* <div className="view-mail-body-item">
           <div className="view-mail-user-icon-container">
             <img
               src={makeBlockie("jeNnvxnU0qguF-xj3k1hMYlSHgEOMAxtpeYBwKy1r9k")}
@@ -121,7 +96,7 @@ function ViewMail() {
               automatically be run when the blockie is loaded...
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="view-mail-body-item">
           <div className="view-mail-user-icon-container">
             <img
@@ -134,14 +109,14 @@ function ViewMail() {
             <div className="view-mail-body-content-header">
               <span className="view-mail-body-content-user">
                 <span className="view-mail-body-content-user-name">
-                  Test Name
+                  {shortenAddress(selectedMail.from)}
                 </span>
                 <span className="view-mail-body-content-user-wallet">
                   <span className="view-mail-body-content-wallet-icon">
                     <FontAwesomeIcon icon={faWallet} />
                   </span>
                   <span className="view-mail-body-content-wallet-amount">
-                    2 AR
+                    {Number.parseFloat(selectedMail.tx_qty).toFixed(2)} AR
                   </span>
                 </span>
               </span>
@@ -154,10 +129,13 @@ function ViewMail() {
               </span>
             </div>
             <div className="view-mail-body-content">
-              <ReadonlyEditor content={initialValue}></ReadonlyEditor>
+              <ReadonlyEditor content={selectedMail.body}></ReadonlyEditor>
             </div>
             <div className="view-mail-body-action-container">
-              <div className="view-mail-body-action-button">
+              <div
+                className="view-mail-body-action-button"
+                onClick={(e) => setShowReply(true)}
+              >
                 <span className="view-mail-body-action-icon">
                   <FontAwesomeIcon icon={faReply} />
                 </span>
@@ -172,42 +150,50 @@ function ViewMail() {
             </div>
           </div>
         </div>
-        <div className="view-mail-body-item">
-          <div className="view-mail-user-icon-container">
-            <img
-              src={makeBlockie("jeNnvxnU0qguF-xj3k1hMYlSHgEOMAxtpeYBwKy1r9k")}
-              alt="address-blockie"
-              className="user-profile-blockie-icon"
-            />
-          </div>
-          <div className="view-mail-body-content-container">
-            <div className="view-mail-body-content-header">
-              <span className="view-mail-body-content-reply">
-                <FontAwesomeIcon icon={faReply} />
-              </span>
-              <span className="view-mail-body-content-user-reply">
-                Test Name
-              </span>
-            </div>
-            <div className="reply-body-amount">
-              <input
-                type="number"
-                placeholder="0 Ar"
-                className="reply-body-amount-input"
+        {showReply && (
+          <div className="view-mail-body-item">
+            <div className="view-mail-user-icon-container">
+              <img
+                src={makeBlockie("jeNnvxnU0qguF-xj3k1hMYlSHgEOMAxtpeYBwKy1r9k")}
+                alt="address-blockie"
+                className="user-profile-blockie-icon"
               />
             </div>
-            <div className="view-mail-body-content-reply-container">
-              <MailEditor />
-            </div>
-            <div className="compose-body-buttons-container">
-              <div className="send-button-container">
-                <button type="button" className="send-mail-button">
-                  Send
-                </button>
+            <div className="view-mail-body-content-container">
+              <div className="view-mail-body-content-header">
+                <span className="view-mail-body-content-reply">
+                  <FontAwesomeIcon icon={faReply} />
+                </span>
+                <span className="view-mail-body-content-user-reply">
+                  Test Name
+                </span>
+              </div>
+              <div className="reply-body-amount">
+                <input
+                  type="number"
+                  placeholder="0 Ar"
+                  className="reply-body-amount-input"
+                />
+              </div>
+              <div className="view-mail-body-content-reply-container">
+                <MailEditor />
+              </div>
+              <div className="compose-body-buttons-container">
+                <div className="send-button-container">
+                  <button type="button" className="send-mail-button">
+                    Send
+                  </button>
+                  <span
+                    className="reply-mail-trash"
+                    onClick={(e) => setShowReply(false)}
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

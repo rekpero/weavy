@@ -7,7 +7,9 @@ import ViewMail from "../ViewMail";
 import { StateContext, ActionContext } from "../../hook";
 
 function Home() {
-  const { openComposeMail, wallet } = React.useContext(StateContext);
+  const { openComposeMail, wallet, selectedMail } = React.useContext(
+    StateContext
+  );
   const { refreshAllMail } = React.useContext(ActionContext);
 
   React.useEffect(() => {
@@ -22,7 +24,7 @@ function Home() {
     <div className="home">
       <Sidebar></Sidebar>
       <MailBox></MailBox>
-      <ViewMail></ViewMail>
+      {selectedMail && <ViewMail></ViewMail>}
       {openComposeMail && <ComposeMailBox></ComposeMailBox>}
     </div>
   );

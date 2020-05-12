@@ -4,16 +4,22 @@ import makeBlockie from "ethereum-blockies-base64";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWallet, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { StateContext } from "../../hook";
+import { StateContext, ActionContext } from "../../hook";
 import { shortenAddress } from "../../utils";
 
 function MailBoxContent() {
-  const { allMail } = React.useContext(StateContext);
-  console.log(allMail.length && allMail[1]);
+  const { allMail, selectedMail } = React.useContext(StateContext);
+  const { selectMail } = React.useContext(ActionContext);
   return (
     <div className="mailbox-content">
       {allMail.map((mail, id) => (
-        <div className="mail-item" key={id}>
+        <div
+          className={`${
+            selectedMail && selectedMail.id === mail.id ? "selected" : ""
+          } mail-item`}
+          key={id}
+          onClick={(e) => selectMail(mail)}
+        >
           <div className="select-mail-container">
             <input type="checkbox" className="filled" />
           </div>

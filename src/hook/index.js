@@ -36,6 +36,16 @@ export const AppProvider = (props) => {
             ...prevState,
             allMail: action.allMail,
           };
+        case "MAIL_SELECTED":
+          return {
+            ...prevState,
+            selectedMail: action.mail,
+          };
+        case "MENU_SELECTED":
+          return {
+            ...prevState,
+            selectedMenu: action.menu,
+          };
         default:
       }
     },
@@ -45,6 +55,8 @@ export const AppProvider = (props) => {
       walletAddress: JSON.parse(sessionStorage.getItem("walletAddress")),
       openComposeMail: false,
       allMail: [],
+      selectedMail: null,
+      selectedMenu: "inbox",
     }
   );
 
@@ -80,6 +92,14 @@ export const AppProvider = (props) => {
         const allMail = await ArweaveService.refreshInbox(wallet);
         console.log(allMail);
         dispatch({ type: "ALL_MAIL_FETCHED", allMail });
+      },
+      selectMail: async (mail) => {
+        console.log(mail);
+        dispatch({ type: "MAIL_SELECTED", mail });
+      },
+      selectMenu: async (menu) => {
+        console.log(menu);
+        dispatch({ type: "MENU_SELECTED", menu });
       },
     }),
     []

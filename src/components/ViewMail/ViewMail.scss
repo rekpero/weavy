@@ -6,10 +6,25 @@
     padding: 7px 2em;
     height: 35px;
     border-bottom: 1px solid #c7c7c791;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     .view-mail-header-subject {
       margin: 0;
       font-size: 22px;
       font-weight: 500;
+    }
+    .view-mail-header-close {
+      height: 36px;
+      width: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
     }
   }
 
@@ -163,6 +178,21 @@
           align-items: center;
           .send-button-container {
             flex-grow: 1;
+            justify-content: space-between;
+            display: flex;
+            .reply-mail-trash {
+              height: 36px;
+              width: 36px;
+              display: flex;
+              margin-right: 0.5em;
+              align-items: center;
+              justify-content: center;
+              border-radius: 50%;
+              cursor: pointer;
+              &:hover {
+                background-color: var(--hoverBackground);
+              }
+            }
             .send-mail-button {
               height: 36px;
               background: var(--themeColor);

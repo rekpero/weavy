@@ -6,10 +6,11 @@ import {
   faStar,
   faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
-import { ActionContext } from "../../hook";
+import { ActionContext, StateContext } from "../../hook";
 
 function Sidebar() {
   const { toggleComposeMail } = React.useContext(ActionContext);
+  const { selectedMenu } = React.useContext(StateContext);
 
   return (
     <div className="sidebar">
@@ -20,16 +21,20 @@ function Sidebar() {
         <span className="compose-icon">+</span>
         <span className="compose-title">Compose</span>
       </button>
-      <div className="sidebar-item">
+      <div
+        className={`sidebar-item ${selectedMenu === "inbox" ? "selected" : ""}`}
+      >
         <span className="sidebar-item-main">
           <span>
             <FontAwesomeIcon icon={faInbox}></FontAwesomeIcon>
           </span>
           <span className="sidebar-item-title">Inbox</span>
         </span>
-        <span className="sidebar-item-number">1</span>
+        {/* <span className="sidebar-item-number">1</span> */}
       </div>
-      <div className="sidebar-item">
+      <div
+        className={`sidebar-item ${selectedMenu === "sent" ? "selected" : ""}`}
+      >
         <span className="sidebar-item-main">
           <span>
             <FontAwesomeIcon icon={faPaperPlane}></FontAwesomeIcon>
@@ -38,7 +43,11 @@ function Sidebar() {
         </span>
         {/* <span className="sidebar-item-number">1</span> */}
       </div>
-      <div className="sidebar-item">
+      <div
+        className={`sidebar-item ${
+          selectedMenu === "starred" ? "selected" : ""
+        }`}
+      >
         <span className="sidebar-item-main">
           <span>
             <FontAwesomeIcon icon={faStar}></FontAwesomeIcon>

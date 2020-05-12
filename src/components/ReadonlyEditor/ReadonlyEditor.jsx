@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import "./ReadonlyEditor.scss";
 import isHotkey from "is-hotkey";
 import { Editable, withReact, useSlate, Slate } from "slate-react";
@@ -28,6 +28,10 @@ function ReadonlyEditor({ onValueChange, content }) {
       onValueChange(value);
     }
   };
+
+  useEffect(() => {
+    setValue(content);
+  }, [content]);
 
   return (
     <div className="mail-editor">
