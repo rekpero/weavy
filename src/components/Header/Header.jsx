@@ -1,15 +1,22 @@
 import React from "react";
 import "./Header.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faBell } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faBell, faCopy } from "@fortawesome/free-solid-svg-icons";
+import {} from "@fortawesome/free-regular-svg-icons";
 import makeBlockie from "ethereum-blockies-base64";
-import { ActionContext } from "../../hook";
+import { ActionContext, StateContext } from "../../hook";
+import copy from "clipboard-copy";
+import { shortenAddress } from "../../utils";
 
 function Header() {
   const { signOut } = React.useContext(ActionContext);
+  const { walletAddress } = React.useContext(StateContext);
   const [showDropdown, setShowDropdown] = React.useState(false);
   const logout = () => {
     signOut();
+  };
+  const copyWalletAddress = () => {
+    copy(walletAddress);
   };
   return (
     <div className="header">
@@ -42,8 +49,21 @@ function Header() {
       )}
       {showDropdown && (
         <div className="toolbar-dropdown-box">
-          <div className="dropdown-title">Logout from Wallet</div>
-          <div></div>
+          <div className="toolbar-dropdown-profile-icon-container">
+            <img
+              src={makeBlockie("jeNnvxnU0qguF-xj3k1hMYlSHgEOMAxtpeYBwKy1r9k")}
+              alt="address-blockie"
+              className="user-profile-blockie-icon"
+            />
+          </div>
+          <div className="wallet-address-container" onClick={copyWalletAddress}>
+            <div className="dropdown-title">
+              {shortenAddress(walletAddress)}
+            </div>
+            <div className="wallet-address-copy">
+              <FontAwesomeIcon icon={faCopy} />
+            </div>
+          </div>
           <div className="dropdown-menu-button-container">
             <button
               type="button"

@@ -41,7 +41,6 @@ function MailEditor({ onValueChange }) {
           renderLeaf={renderLeaf}
           placeholder=""
           spellCheck
-          autoFocus
           className="mail-editor-body"
           onKeyDown={(event) => {
             for (const hotkey in HOTKEYS) {

@@ -66,7 +66,7 @@ function ViewMail() {
           </div>
           <div className="view-mail-body-content-container">
             <div className="view-mail-body-content-header">
-              <span className="view-mail-body-content-user">Mitra</span>
+              <span className="view-mail-body-content-user">Test Name</span>
               <span className="view-mail-body-content-time">Time</span>
               <span className="view-mail-body-content-star">
                 <FontAwesomeIcon icon={faStar} />
@@ -88,7 +88,7 @@ function ViewMail() {
           </div>
           <div className="view-mail-body-content-container">
             <div className="view-mail-body-content-header">
-              <span className="view-mail-body-content-user">Mitra</span>
+              <span className="view-mail-body-content-user">Test Name</span>
               <span className="view-mail-body-content-time">Time</span>
               <span className="view-mail-body-content-star">
                 <FontAwesomeIcon icon={faStar} />
@@ -110,7 +110,7 @@ function ViewMail() {
           </div>
           <div className="view-mail-body-content-container">
             <div className="view-mail-body-content-header">
-              <span className="view-mail-body-content-user">Mitra</span>
+              <span className="view-mail-body-content-user">Test Name</span>
               <span className="view-mail-body-content-time">Time</span>
               <span className="view-mail-body-content-star">
                 <FontAwesomeIcon icon={faStar} />
@@ -133,7 +133,9 @@ function ViewMail() {
           <div className="view-mail-body-content-container">
             <div className="view-mail-body-content-header">
               <span className="view-mail-body-content-user">
-                <span className="view-mail-body-content-user-name">Mitra</span>
+                <span className="view-mail-body-content-user-name">
+                  Test Name
+                </span>
                 <span className="view-mail-body-content-user-wallet">
                   <span className="view-mail-body-content-wallet-icon">
                     <FontAwesomeIcon icon={faWallet} />
@@ -183,7 +185,9 @@ function ViewMail() {
               <span className="view-mail-body-content-reply">
                 <FontAwesomeIcon icon={faReply} />
               </span>
-              <span className="view-mail-body-content-user-reply">Mitra</span>
+              <span className="view-mail-body-content-user-reply">
+                Test Name
+              </span>
             </div>
             <div className="reply-body-amount">
               <input

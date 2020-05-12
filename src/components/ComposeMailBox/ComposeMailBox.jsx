@@ -3,31 +3,48 @@ import "./ComposeMailBox.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faMinus } from "@fortawesome/free-solid-svg-icons";
 import MailEditor from "../MailEditor";
-import { ActionContext } from "../../hook";
+import { ActionContext, StateContext } from "../../hook";
+import { ArweaveService, CryptoService } from "../../services";
 
 function ComposeMailBox() {
   const { toggleComposeMail } = React.useContext(ActionContext);
+  const { wallet } = React.useContext(StateContext);
 
   const [collapse, setCollapse] = React.useState(false);
   const [recipient, setRecipient] = React.useState("");
   const [subject, setSubject] = React.useState("");
-  const [amount, setAmount] = React.useState("");
+  const [tokens, setTokens] = React.useState("");
   const [content, setContent] = React.useState("");
 
   const sendMail = async () => {
     const stringifyContent = JSON.stringify(content);
-    console.log(stringifyContent);
-    const parsedContent = JSON.parse(stringifyContent);
-    console.log(parsedContent);
-    console.log(recipient, subject, content, amount);
-  };
+    var mailTagUnixTime = Math.round(new Date().getTime() / 1000);
+    let finalTokens = "";
+    if (tokens === "") {
+      finalTokens = "0";
+    }
+    finalTokens = ArweaveService.convertToWinston(tokens);
 
-  const initialValue = [
-    {
-      type: "paragraph",
-      children: [{ text: "" }],
-    },
-  ];
+    var pub_key = await CryptoService.get_public_key(recipient);
+
+    if (pub_key === undefined) {
+      alert("Recipient has to send a transaction to the network, first!");
+      return;
+    }
+    const finalContent = await CryptoService.encrypt_mail(
+      stringifyContent,
+      subject,
+      pub_key
+    );
+    console.log(content);
+    await ArweaveService.sendMail(
+      recipient,
+      finalTokens,
+      finalContent,
+      wallet,
+      mailTagUnixTime
+    );
+  };
 
   return (
     <div className="compose-mail-box">
@@ -56,6 +73,7 @@ function ComposeMailBox() {
               type="text"
               placeholder="Recipient"
               className="compose-body-recipient-input"
+              autoFocus
               onChange={(e) => setRecipient(e.target.value)}
             />
           </div>
@@ -72,7 +90,7 @@ function ComposeMailBox() {
               type="number"
               placeholder="0 Ar"
               className="compose-body-amount-input"
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => setTokens(e.target.value)}
             />
           </div>
           <div className="compose-body-content">

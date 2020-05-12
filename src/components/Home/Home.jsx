@@ -4,10 +4,20 @@ import Sidebar from "../Sidebar";
 import MailBox from "../MailBox";
 import ComposeMailBox from "../ComposeMailBox";
 import ViewMail from "../ViewMail";
-import { StateContext } from "../../hook";
+import { StateContext, ActionContext } from "../../hook";
 
 function Home() {
-  const { openComposeMail } = React.useContext(StateContext);
+  const { openComposeMail, wallet } = React.useContext(StateContext);
+  const { refreshAllMail } = React.useContext(ActionContext);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      refreshAllMail(wallet);
+      setInterval(() => {
+        refreshAllMail(wallet);
+      }, 20000);
+    }, 1000);
+  }, []);
   return (
     <div className="home">
       <Sidebar></Sidebar>
