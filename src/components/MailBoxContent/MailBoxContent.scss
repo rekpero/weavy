@@ -1,7 +1,8 @@
 .mailbox-content {
   display: flex;
   flex-direction: column;
-
+  overflow-y: auto;
+  max-height: calc(100vh - 128px);
   .selected {
     background-color: var(--themeColorSelected);
     border-left: 4px solid var(--themeColor);
@@ -41,9 +42,9 @@
         display: flex !important;
       }
 
-      .mail-time {
-        display: none !important;
-      }
+      // .mail-time {
+      //   display: none !important;
+      // }
     }
     .select-mail-container {
       padding-top: 13px;
@@ -215,6 +216,9 @@
           flex: 1;
         }
 
+        .starred-disabled {
+          cursor: not-allowed !important;
+        }
         .mail-starred {
           height: 36px;
           width: 36px;

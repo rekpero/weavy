@@ -22,15 +22,16 @@ export default class CryptoService {
   };
 
   static decrypt_mail = async (enc_data, key) => {
-    console.log(enc_data);
+    // console.log(enc_data);
     var enc_key = new Uint8Array(enc_data.slice(0, 512));
     var enc_mail = new Uint8Array(enc_data.slice(512));
-
+    // console.log(enc_mail);
     var symmetric_key = await window.crypto.subtle.decrypt(
       { name: "RSA-OAEP" },
       key,
       enc_key
     );
+    // console.log(symmetric_key);
 
     return arweave.crypto.decrypt(enc_mail, symmetric_key);
   };

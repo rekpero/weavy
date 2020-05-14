@@ -14,7 +14,12 @@ function ComposeMailBox() {
   const [recipient, setRecipient] = React.useState("");
   const [subject, setSubject] = React.useState("");
   const [tokens, setTokens] = React.useState("");
-  const [content, setContent] = React.useState("");
+  const [content, setContent] = React.useState([
+    {
+      type: "paragraph",
+      children: [{ text: "" }],
+    },
+  ]);
 
   const sendMail = async () => {
     const stringifyContent = JSON.stringify(content);
@@ -44,6 +49,11 @@ function ComposeMailBox() {
       wallet,
       mailTagUnixTime
     );
+    setRecipient("");
+    setSubject("");
+    setTokens("");
+    setContent("");
+    toggleComposeMail(false);
   };
 
   return (
@@ -94,7 +104,10 @@ function ComposeMailBox() {
             />
           </div>
           <div className="compose-body-content">
-            <MailEditor onValueChange={(value) => setContent(value)} />
+            <MailEditor
+              onValueChange={(value) => setContent(value)}
+              content={content}
+            />
           </div>
           <div className="compose-body-buttons-container">
             <div className="send-button-container">

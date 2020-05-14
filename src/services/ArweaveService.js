@@ -1,5 +1,6 @@
 import Arweave from "arweave/web";
 import CryptoService from "./CryptoService";
+import { APP_NAME, APP_VERSION } from "../utils";
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -45,7 +46,7 @@ export default class ArweaveService {
     wallet,
     mailTagUnixTime
   ) => {
-    console.log(address, tokens, content, wallet, mailTagUnixTime);
+    // console.log(address, tokens, content, wallet, mailTagUnixTime);
     var tx = await arweave.createTransaction(
       {
         target: address,
@@ -55,11 +56,11 @@ export default class ArweaveService {
       wallet
     );
 
-    tx.addTag("App-Name", "weave-mail-revamp");
-    tx.addTag("App-Version", "v0.0.0beta1");
+    tx.addTag("App-Name", APP_NAME);
+    tx.addTag("App-Version", APP_VERSION);
     tx.addTag("Unix-Time", mailTagUnixTime);
     await arweave.transactions.sign(tx, wallet);
-    console.log(tx.id);
+    // console.log(tx.id);
     await arweave.transactions.post(tx);
     alert("Mail dispatched!");
   };
@@ -79,12 +80,12 @@ export default class ArweaveService {
         expr1: {
           op: "equals",
           expr1: "App-Name",
-          expr2: "weave-mail-revamp",
+          expr2: APP_NAME,
         },
         expr2: {
           op: "equals",
           expr1: "App-Version",
-          expr2: "v0.0.0beta1",
+          expr2: APP_VERSION,
         },
       },
     };
@@ -99,23 +100,23 @@ export default class ArweaveService {
         res.data.map(async (id, i) => {
           let tx_row = {};
           let tx = await arweave.transactions.get(id);
-          console.log(tx);
+          // console.log(tx);
           tx_row["unixTime"] = "0";
           tx.get("tags").forEach((tag) => {
             let key = tag.get("name", { decode: true, string: true });
             let value = tag.get("value", { decode: true, string: true });
             if (key === "Unix-Time") tx_row["unixTime"] = value;
           });
-          console.log(tx_row);
+          // console.log(tx_row);
 
           tx_row["id"] = id;
           tx_row["tx_status"] = await arweave.transactions.getStatus(id);
           let from_address = await arweave.wallets.ownerToAddress(tx.owner);
-          console.log(tx_row);
+          // console.log(tx_row);
           tx_row["from"] = await this.getName(from_address);
-          console.log(tx_row);
+          // console.log(tx_row);
           tx_row["tx_qty"] = arweave.ar.winstonToAr(tx.quantity);
-          console.log(tx_row);
+          // console.log(tx_row);
           let key = await CryptoService.wallet_to_key(wallet);
           let mail = arweave.utils.bufferToString(
             await CryptoService.decrypt_mail(
@@ -156,6 +157,89 @@ export default class ArweaveService {
 
     tx_rows.sort((a, b) => Number(b.unixTime) - Number(a.unixTime));
     return tx_rows;
+  };
+
+  static starredMail = async (mailTxId, wallet, walletAddress) => {
+    console.log(mailTxId, wallet, walletAddress);
+    const starredMail = {
+      time: Math.round(new Date().getTime() / 1000),
+      type: "starred",
+      mailTxId,
+    };
+
+    const transaction = await arweave.createTransaction(
+      {
+        data: JSON.stringify(starredMail),
+      },
+      wallet
+    );
+    transaction.addTag("Transaction-Type", starredMail.type);
+    transaction.addTag("Time", starredMail.time);
+    transaction.addTag("Mail-Owner", walletAddress);
+    transaction.addTag("App-Name", APP_NAME);
+    transaction.addTag("App-Version", APP_VERSION);
+
+    await arweave.transactions.sign(transaction, wallet);
+    await arweave.transactions.post(transaction);
+    alert("Mail starred!");
+  };
+
+  static getStarredMails = async (walletAddress) => {
+    console.log(walletAddress);
+    const query = {
+      op: "and",
+      expr1: {
+        op: "and",
+        expr1: {
+          op: "equals",
+          expr1: "Transaction-Type",
+          expr2: "starred",
+        },
+        expr2: {
+          op: "equals",
+          expr1: "Mail-Owner",
+          expr2: walletAddress,
+        },
+      },
+      expr2: {
+        op: "and",
+        expr1: {
+          op: "equals",
+          expr1: "App-Name",
+          expr2: APP_NAME,
+        },
+        expr2: {
+          op: "equals",
+          expr1: "App-Version",
+          expr2: APP_VERSION,
+        },
+      },
+    };
+
+    const txids = await arweave.arql(query);
+    if (txids.length === 0) return [];
+
+    const transactions = await Promise.all(
+      txids.map((txid) => arweave.transactions.get(txid))
+    );
+
+    const allTransactions = await Promise.all(
+      transactions.map(async (transaction, id) => {
+        let transactionNew = JSON.parse(
+          transaction.get("data", {
+            decode: true,
+            string: true,
+          })
+        );
+        Object.assign(transactionNew, {
+          txid: txids[id],
+        });
+
+        return transactionNew;
+      })
+    );
+
+    return allTransactions;
   };
 
   static getName = async (addr) => {

@@ -85,6 +85,14 @@
             font-weight: 500;
             display: flex;
             align-items: center;
+            .forward-recipient-input {
+              border: 0;
+              background: transparent;
+              font-size: 15px;
+              font-weight: 500;
+              outline: none;
+              flex: 1 1;
+            }
           }
           .view-mail-body-content-time {
             margin-right: 1em;

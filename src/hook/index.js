@@ -34,7 +34,8 @@ export const AppProvider = (props) => {
         case "ALL_MAIL_FETCHED":
           return {
             ...prevState,
-            allMail: action.allMail,
+            allMail: action.mails.allMail,
+            backupMails: action.mails.backupMails,
           };
         case "MAIL_SELECTED":
           return {
@@ -51,6 +52,16 @@ export const AppProvider = (props) => {
             ...prevState,
             paginationConfig: action.paginationConfig,
           };
+        case "SET_ALL_MAIL":
+          return {
+            ...prevState,
+            allMail: action.allMail,
+          };
+        case "SET_STARRED_MAIL":
+          return {
+            ...prevState,
+            starredMails: action.starredMails,
+          };
         default:
       }
     },
@@ -61,15 +72,13 @@ export const AppProvider = (props) => {
       openComposeMail: false,
       allMail: [],
       backupMails: [],
+      starredMails: [],
       selectedMail: null,
       selectedMenu: "inbox",
       paginationConfig: {
-        left: 1,
-        right: 10,
-        leftEnabled: false,
-        rightEnabled: true,
-        count: 10
-      }
+        current: 1,
+        count: 10,
+      },
     }
   );
 
@@ -104,23 +113,67 @@ export const AppProvider = (props) => {
       refreshAllMail: async (wallet) => {
         const allMail = await ArweaveService.refreshInbox(wallet);
         console.log(allMail);
-        const paginationConfig = {
-          ...state.paginationConfig,
-          right: allMail.length < state.paginationConfig.count ? allMail.length : state.paginationConfig.right,
-          leftEnabled: state.paginationConfig.left !== 1,
-          rightEnabled: (allMail.length < state.paginationConfig.count ? allMail.length : state.paginationConfig.count) !== allMail.length,
-        }
-        const finalMails = allMail.splice(paginationConfig.left - 1, paginationConfig.right < paginationConfig.count ? paginationConfig.right : paginationConfig.count);
-        dispatch({ type: "SET_PAGINATION_CONFIG", paginationConfig });
-        dispatch({ type: "ALL_MAIL_FETCHED", allMail: finalMails });
+        const paginationConfig = state.paginationConfig;
+        const startingPagination =
+          (paginationConfig.current - 1) * paginationConfig.count;
+        const endingPagination =
+          paginationConfig.current * paginationConfig.count - 1;
+        const finalMails = allMail.filter(
+          (mail, index) =>
+            index >= startingPagination && index <= endingPagination
+        );
+        dispatch({
+          type: "ALL_MAIL_FETCHED",
+          mails: { allMail: finalMails, backupMails: allMail },
+        });
+        const starredMailIds = await ArweaveService.getStarredMails(
+          JSON.parse(sessionStorage.getItem("walletAddress"))
+        );
+        // console.log(starredMails);
+        const starredMails = allMail.filter((mail) =>
+          starredMailIds.map((star) => star.mailTxId).includes(mail.id)
+        );
+        // console.log(starredMails);
+        dispatch({ type: "SET_STARRED_MAIL", starredMails });
       },
       selectMail: async (mail) => {
-        console.log(mail);
+        // console.log(mail);
         dispatch({ type: "MAIL_SELECTED", mail });
       },
       selectMenu: async (menu) => {
-        console.log(menu);
+        // console.log(menu);
+        dispatch({ type: "MAIL_SELECTED", mail: null });
         dispatch({ type: "MENU_SELECTED", menu });
+      },
+      setPagination: (prevPaginationConfig, paginationType, backupMails) => {
+        console.log(
+          prevPaginationConfig,
+          paginationType === "next"
+            ? state.paginationConfig.current + 1
+            : state.paginationConfig.current - 1
+        );
+        let paginationConfig = {
+          ...prevPaginationConfig,
+          current:
+            paginationType === "next"
+              ? prevPaginationConfig.current + 1
+              : prevPaginationConfig.current - 1,
+        };
+        // console.log(paginationConfig);
+        const startingPagination =
+          (paginationConfig.current - 1) * paginationConfig.count;
+        const endingPagination =
+          paginationConfig.current * paginationConfig.count - 1;
+        // console.log(endingPagination, startingPagination, state.backupMails);
+        const finalMails = backupMails.filter(
+          (mail, index) =>
+            index >= startingPagination && index <= endingPagination
+        );
+        dispatch({
+          type: "SET_ALL_MAIL",
+          allMail: finalMails,
+        });
+        dispatch({ type: "SET_PAGINATION_CONFIG", paginationConfig });
       },
     }),
     []

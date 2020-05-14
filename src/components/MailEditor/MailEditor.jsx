@@ -16,8 +16,8 @@ const HOTKEYS = {
 
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
-function MailEditor({ onValueChange }) {
-  const [value, setValue] = useState(initialValue);
+function MailEditor({ onValueChange, content }) {
+  const [value, setValue] = useState(content);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
