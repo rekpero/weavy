@@ -46,6 +46,11 @@ export const AppProvider = (props) => {
             ...prevState,
             selectedMenu: action.menu,
           };
+        case "SET_PAGINATION_CONFIG":
+          return {
+            ...prevState,
+            paginationConfig: action.paginationConfig,
+          };
         default:
       }
     },
@@ -55,8 +60,16 @@ export const AppProvider = (props) => {
       walletAddress: JSON.parse(sessionStorage.getItem("walletAddress")),
       openComposeMail: false,
       allMail: [],
+      backupMails: [],
       selectedMail: null,
       selectedMenu: "inbox",
+      paginationConfig: {
+        left: 1,
+        right: 10,
+        leftEnabled: false,
+        rightEnabled: true,
+        count: 10
+      }
     }
   );
 
@@ -91,7 +104,15 @@ export const AppProvider = (props) => {
       refreshAllMail: async (wallet) => {
         const allMail = await ArweaveService.refreshInbox(wallet);
         console.log(allMail);
-        dispatch({ type: "ALL_MAIL_FETCHED", allMail });
+        const paginationConfig = {
+          ...state.paginationConfig,
+          right: allMail.length < state.paginationConfig.count ? allMail.length : state.paginationConfig.right,
+          leftEnabled: state.paginationConfig.left !== 1,
+          rightEnabled: (allMail.length < state.paginationConfig.count ? allMail.length : state.paginationConfig.count) !== allMail.length,
+        }
+        const finalMails = allMail.splice(paginationConfig.left - 1, paginationConfig.right < paginationConfig.count ? paginationConfig.right : paginationConfig.count);
+        dispatch({ type: "SET_PAGINATION_CONFIG", paginationConfig });
+        dispatch({ type: "ALL_MAIL_FETCHED", allMail: finalMails });
       },
       selectMail: async (mail) => {
         console.log(mail);

@@ -159,6 +159,14 @@
       }
     }
 
+    .disabled {
+      color: var(--bodyBg) !important;
+      &:hover {
+        background-color: transparent !important;
+        cursor: not-allowed;
+      }
+    }
+
     .pagination-left-container {
       margin-left: 1.5em;
       color: var(--labelColor);

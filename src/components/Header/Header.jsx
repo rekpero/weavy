@@ -26,7 +26,7 @@ function Header() {
       <div className="search-bar-container">
         <div className="search-bar">
           <FontAwesomeIcon icon={faSearch} />
-          <input type="text" className="search-bar-input" />
+          <input type="text" className="search-bar-input" placeholder="Search mail" />
         </div>
       </div>
       <div className="user-profile-container">
