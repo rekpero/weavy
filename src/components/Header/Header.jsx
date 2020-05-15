@@ -9,8 +9,8 @@ import copy from "clipboard-copy";
 import { shortenAddress } from "../../utils";
 
 function Header() {
-  const { signOut } = React.useContext(ActionContext);
-  const { walletAddress } = React.useContext(StateContext);
+  const { signOut, searchMails } = React.useContext(ActionContext);
+  const { walletAddress, backupMails } = React.useContext(StateContext);
   const [showDropdown, setShowDropdown] = React.useState(false);
   const logout = () => {
     signOut();
@@ -26,7 +26,12 @@ function Header() {
       <div className="search-bar-container">
         <div className="search-bar">
           <FontAwesomeIcon icon={faSearch} />
-          <input type="text" className="search-bar-input" placeholder="Search mail" />
+          <input
+            type="text"
+            className="search-bar-input"
+            placeholder="Search mail"
+            onChange={(e) => searchMails(e.target.value, backupMails)}
+          />
         </div>
       </div>
       <div className="user-profile-container">

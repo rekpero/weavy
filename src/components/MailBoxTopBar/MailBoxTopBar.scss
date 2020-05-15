@@ -125,7 +125,7 @@
     }
 
     .reload-container {
-      margin-left: 2em;
+      // margin-left: 2em;
       color: var(--labelColor);
       height: 36px;
       width: 36px;
@@ -144,6 +144,20 @@
   .mailbox-top-bar-right {
     display: flex;
     align-items: center;
+
+    .last-synced-container {
+      font-weight: 500;
+      color: var(--labelColor);
+      width: 196px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
+    }
 
     .pagination-content-container {
       font-weight: 500;

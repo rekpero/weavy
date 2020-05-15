@@ -22,10 +22,12 @@ function MailBoxContent() {
     wallet,
     walletAddress,
   } = React.useContext(StateContext);
-  const { selectMail } = React.useContext(ActionContext);
+  const { selectMail, setNotification } = React.useContext(ActionContext);
 
   const starredMail = async (txId) => {
+    setNotification("Starring mail...");
     await ArweaveService.starredMail(txId, wallet, walletAddress);
+    setNotification("Mail has been starred");
   };
 
   return (
@@ -39,9 +41,9 @@ function MailBoxContent() {
             key={id}
             onClick={(e) => selectMail(mail)}
           >
-            <div className="select-mail-container">
+            {/* <div className="select-mail-container">
               <input type="checkbox" className="filled" />
-            </div>
+            </div> */}
             <div className="user-profile-icon-container">
               <img
                 src={makeBlockie(mail.from)}
@@ -106,9 +108,9 @@ function MailBoxContent() {
             key={id}
             onClick={(e) => selectMail(mail)}
           >
-            <div className="select-mail-container">
+            {/* <div className="select-mail-container">
               <input type="checkbox" className="filled" />
-            </div>
+            </div> */}
             <div className="user-profile-icon-container">
               <img
                 src={makeBlockie(mail.from)}

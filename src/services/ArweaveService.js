@@ -46,7 +46,6 @@ export default class ArweaveService {
     wallet,
     mailTagUnixTime
   ) => {
-    // console.log(address, tokens, content, wallet, mailTagUnixTime);
     var tx = await arweave.createTransaction(
       {
         target: address,
@@ -60,9 +59,7 @@ export default class ArweaveService {
     tx.addTag("App-Version", APP_VERSION);
     tx.addTag("Unix-Time", mailTagUnixTime);
     await arweave.transactions.sign(tx, wallet);
-    // console.log(tx.id);
     await arweave.transactions.post(tx);
-    alert("Mail dispatched!");
   };
 
   static refreshInbox = async (wallet) => {
@@ -100,23 +97,18 @@ export default class ArweaveService {
         res.data.map(async (id, i) => {
           let tx_row = {};
           let tx = await arweave.transactions.get(id);
-          // console.log(tx);
           tx_row["unixTime"] = "0";
           tx.get("tags").forEach((tag) => {
             let key = tag.get("name", { decode: true, string: true });
             let value = tag.get("value", { decode: true, string: true });
             if (key === "Unix-Time") tx_row["unixTime"] = value;
           });
-          // console.log(tx_row);
 
           tx_row["id"] = id;
           tx_row["tx_status"] = await arweave.transactions.getStatus(id);
           let from_address = await arweave.wallets.ownerToAddress(tx.owner);
-          // console.log(tx_row);
           tx_row["from"] = await this.getName(from_address);
-          // console.log(tx_row);
           tx_row["tx_qty"] = arweave.ar.winstonToAr(tx.quantity);
-          // console.log(tx_row);
           let key = await CryptoService.wallet_to_key(wallet);
           let mail = arweave.utils.bufferToString(
             await CryptoService.decrypt_mail(
@@ -160,7 +152,6 @@ export default class ArweaveService {
   };
 
   static starredMail = async (mailTxId, wallet, walletAddress) => {
-    console.log(mailTxId, wallet, walletAddress);
     const starredMail = {
       time: Math.round(new Date().getTime() / 1000),
       type: "starred",
@@ -181,11 +172,10 @@ export default class ArweaveService {
 
     await arweave.transactions.sign(transaction, wallet);
     await arweave.transactions.post(transaction);
-    alert("Mail starred!");
+    // alert("Mail starred!");
   };
 
   static getStarredMails = async (walletAddress) => {
-    console.log(walletAddress);
     const query = {
       op: "and",
       expr1: {

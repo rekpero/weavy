@@ -8,11 +8,15 @@ import {
   faAngleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { StateContext, ActionContext } from "../../hook";
+import moment from "moment";
 
 function MailBoxTopBar() {
-  const { wallet, backupMails, paginationConfig } = React.useContext(
-    StateContext
-  );
+  const {
+    wallet,
+    backupMails,
+    paginationConfig,
+    lastSyncTime,
+  } = React.useContext(StateContext);
   const { refreshAllMail, setPagination } = React.useContext(ActionContext);
   const startingPagination =
     (paginationConfig.current - 1) * paginationConfig.count + 1;
@@ -23,21 +27,23 @@ function MailBoxTopBar() {
   const leftEnabled = startingPagination !== 1;
   const rightEnabled = endingPagination !== backupMails.length;
 
-  // console.log(paginationConfig);
   return (
     <div className="mailbox-top-bar">
       <div className="mailbox-top-bar-left">
-        <div className="select-all-container">
+        {/* <div className="select-all-container">
           <input type="checkbox" className="filled" />
-        </div>
+        </div> */}
         <div
           className="reload-container"
-          onClick={(e) => refreshAllMail(wallet)}
+          onClick={(e) => refreshAllMail(wallet, false, lastSyncTime)}
         >
           <FontAwesomeIcon icon={faRedoAlt} />
         </div>
       </div>
       <div className="mailbox-top-bar-right">
+        <div className="last-synced-container">
+          Last synced {moment(lastSyncTime).format("LT")}
+        </div>
         <div className="pagination-content-container">
           {startingPagination}-{endingPagination} of {backupMails.length}
         </div>
@@ -57,9 +63,9 @@ function MailBoxTopBar() {
         >
           <FontAwesomeIcon icon={faAngleRight} />
         </div>
-        <div className="pagination-menu-container">
+        {/* <div className="pagination-menu-container">
           <FontAwesomeIcon icon={faEllipsisV} />
-        </div>
+        </div> */}
       </div>
     </div>
   );

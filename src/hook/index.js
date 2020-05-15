@@ -1,5 +1,6 @@
 import React, { createContext, useMemo } from "react";
 import { ArweaveService } from "../services";
+import moment from "moment";
 
 export const ActionContext = createContext();
 export const StateContext = createContext();
@@ -62,6 +63,36 @@ export const AppProvider = (props) => {
             ...prevState,
             starredMails: action.starredMails,
           };
+        case "SET_FIRST_TIME_LOADER":
+          return {
+            ...prevState,
+            firstTimeLoader: action.firstTimeLoader,
+          };
+        case "SET_MAIL_LOADER":
+          return {
+            ...prevState,
+            mailLoader: action.mailLoader,
+          };
+        case "SET_FIRST_TIME":
+          return {
+            ...prevState,
+            firstTime: action.firstTime,
+          };
+        case "SET_LAST_SYNC_TIME":
+          return {
+            ...prevState,
+            lastSyncTime: action.lastSyncTime,
+          };
+        case "SET_SHOW_NOTIFICATION":
+          return {
+            ...prevState,
+            showNotification: action.showNotification,
+          };
+        case "SET_NOTIFICATION_MESSAGE":
+          return {
+            ...prevState,
+            notificationMessage: action.notificationMessage,
+          };
         default:
       }
     },
@@ -75,6 +106,12 @@ export const AppProvider = (props) => {
       starredMails: [],
       selectedMail: null,
       selectedMenu: "inbox",
+      firstTimeLoader: false,
+      mailLoader: false,
+      firstTime: true,
+      lastSyncTime: moment().toString(),
+      notificationMessage: "",
+      showNotification: false,
       paginationConfig: {
         current: 1,
         count: 10,
@@ -110,9 +147,13 @@ export const AppProvider = (props) => {
       toggleComposeMail: (pFlag) => {
         dispatch({ type: "TOGGLE_COMPOSE_MAIL", open: pFlag });
       },
-      refreshAllMail: async (wallet) => {
+      refreshAllMail: async (wallet, isFirstTime, lastSyncTime) => {
+        if (isFirstTime) {
+          dispatch({ type: "SET_FIRST_TIME_LOADER", firstTimeLoader: true });
+        } else {
+          dispatch({ type: "SET_MAIL_LOADER", mailLoader: true });
+        }
         const allMail = await ArweaveService.refreshInbox(wallet);
-        console.log(allMail);
         const paginationConfig = state.paginationConfig;
         const startingPagination =
           (paginationConfig.current - 1) * paginationConfig.count;
@@ -129,29 +170,50 @@ export const AppProvider = (props) => {
         const starredMailIds = await ArweaveService.getStarredMails(
           JSON.parse(sessionStorage.getItem("walletAddress"))
         );
-        // console.log(starredMails);
         const starredMails = allMail.filter((mail) =>
           starredMailIds.map((star) => star.mailTxId).includes(mail.id)
         );
-        // console.log(starredMails);
         dispatch({ type: "SET_STARRED_MAIL", starredMails });
+        lastSyncTime = moment().toString();
+        dispatch({ type: "SET_LAST_SYNC_TIME", lastSyncTime });
+
+        if (isFirstTime) {
+          dispatch({ type: "SET_FIRST_TIME_LOADER", firstTimeLoader: false });
+        } else {
+          dispatch({ type: "SET_MAIL_LOADER", mailLoader: false });
+        }
       },
       selectMail: async (mail) => {
-        // console.log(mail);
         dispatch({ type: "MAIL_SELECTED", mail });
       },
+      setFirstTime: async (firstTime) => {
+        dispatch({ type: "SET_FIRST_TIME", firstTime });
+      },
       selectMenu: async (menu) => {
-        // console.log(menu);
         dispatch({ type: "MAIL_SELECTED", mail: null });
         dispatch({ type: "MENU_SELECTED", menu });
       },
-      setPagination: (prevPaginationConfig, paginationType, backupMails) => {
-        console.log(
-          prevPaginationConfig,
-          paginationType === "next"
-            ? state.paginationConfig.current + 1
-            : state.paginationConfig.current - 1
+      setNotification: async (notificationMessage) => {
+        dispatch({ type: "SET_NOTIFICATION_MESSAGE", notificationMessage });
+        dispatch({ type: "SET_SHOW_NOTIFICATION", showNotification: true });
+        setTimeout(() => {
+          dispatch({ type: "SET_SHOW_NOTIFICATION", showNotification: false });
+        }, 10000);
+      },
+      closeNotification: async () => {
+        dispatch({ type: "SET_SHOW_NOTIFICATION", showNotification: false });
+      },
+      searchMails: async (search, backupMails) => {
+        const filteredMails = backupMails.filter(
+          (mail) =>
+            mail.subject.toLowerCase().indexOf(search.toLowerCase()) !== -1
         );
+        dispatch({
+          type: "SET_ALL_MAIL",
+          allMail: filteredMails,
+        });
+      },
+      setPagination: (prevPaginationConfig, paginationType, backupMails) => {
         let paginationConfig = {
           ...prevPaginationConfig,
           current:
@@ -159,12 +221,10 @@ export const AppProvider = (props) => {
               ? prevPaginationConfig.current + 1
               : prevPaginationConfig.current - 1,
         };
-        // console.log(paginationConfig);
         const startingPagination =
           (paginationConfig.current - 1) * paginationConfig.count;
         const endingPagination =
           paginationConfig.current * paginationConfig.count - 1;
-        // console.log(endingPagination, startingPagination, state.backupMails);
         const finalMails = backupMails.filter(
           (mail, index) =>
             index >= startingPagination && index <= endingPagination

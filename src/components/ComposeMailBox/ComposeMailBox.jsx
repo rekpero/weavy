@@ -7,7 +7,9 @@ import { ActionContext, StateContext } from "../../hook";
 import { ArweaveService, CryptoService } from "../../services";
 
 function ComposeMailBox() {
-  const { toggleComposeMail } = React.useContext(ActionContext);
+  const { toggleComposeMail, setNotification } = React.useContext(
+    ActionContext
+  );
   const { wallet } = React.useContext(StateContext);
 
   const [collapse, setCollapse] = React.useState(false);
@@ -22,6 +24,7 @@ function ComposeMailBox() {
   ]);
 
   const sendMail = async () => {
+    setNotification("Sending mail...");
     const stringifyContent = JSON.stringify(content);
     var mailTagUnixTime = Math.round(new Date().getTime() / 1000);
     let finalTokens = "";
@@ -41,7 +44,6 @@ function ComposeMailBox() {
       subject,
       pub_key
     );
-    console.log(content);
     await ArweaveService.sendMail(
       recipient,
       finalTokens,
@@ -54,6 +56,7 @@ function ComposeMailBox() {
     setTokens("");
     setContent("");
     toggleComposeMail(false);
+    setNotification("Mail has been sent");
   };
 
   return (

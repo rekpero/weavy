@@ -1,4 +1,41 @@
 .home {
   height: 100vh;
   display: flex;
+
+  .mail-top-loader-container {
+    position: fixed;
+    top: 4px;
+    left: 50%;
+    width: 150px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffa8;
+    border-radius: 4px;
+    border: 1px solid #ff8200;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .mail-notification-container {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--textColor);
+    color: #fff;
+    border-radius: 4px;
+    border: 1px solid var(--textColor);
+    font-size: 16px;
+    font-weight: 500;
+
+    .mail-notification-close {
+      margin-left: 1em;
+      cursor: pointer;
+    }
+  }
 }

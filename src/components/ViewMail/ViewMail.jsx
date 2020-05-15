@@ -19,7 +19,7 @@ import { ArweaveService, CryptoService } from "../../services";
 import moment from "moment";
 
 function ViewMail() {
-  const { selectMail } = React.useContext(ActionContext);
+  const { selectMail, setNotification } = React.useContext(ActionContext);
   const {
     selectedMail,
     wallet,
@@ -37,6 +37,7 @@ function ViewMail() {
     },
   ]);
   const sendReply = async () => {
+    setNotification("Sending reply...");
     const recipient = selectedMail.from;
     const subject = selectedMail.subject;
     const stringifyContent = JSON.stringify(content);
@@ -68,9 +69,11 @@ function ViewMail() {
     setTokens("");
     setContent("");
     setShowReply(false);
+    setNotification("Reply has been sent");
   };
 
   const sendForward = async () => {
+    setNotification("Sending forward...");
     const subject = selectedMail.subject;
     const stringifyContent = JSON.stringify(content);
     var mailTagUnixTime = Math.round(new Date().getTime() / 1000);
@@ -102,6 +105,7 @@ function ViewMail() {
     setContent("");
     setRecipient("");
     setShowForward(false);
+    setNotification("Forward has been sent");
   };
 
   const openForward = () => {
@@ -111,7 +115,9 @@ function ViewMail() {
   };
 
   const starredMail = async (txId) => {
+    setNotification("Starring mail...");
     await ArweaveService.starredMail(txId, wallet, walletAddress);
+    setNotification("Mail has been starred");
   };
 
   return (
