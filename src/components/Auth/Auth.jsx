@@ -25,7 +25,7 @@ function Auth() {
       <div className="widget-main-container">
         <div className="widget-container">
           <div>
-            <h2 className="widget-title">Weavemail</h2>
+            <h2 className="widget-title">Weavy</h2>
           </div>
           <div className="wallet-input-field">
             <input
@@ -40,7 +40,7 @@ function Auth() {
           <div className="widget-description">
             <div>
               {" "}
-              Weavemail is mail that <b>Google cannot read.</b>
+              Weavy is mail that <b>Google cannot read.</b>
             </div>
             <div>
               Mail that <b>cannot be censored.</b>
@@ -49,7 +49,7 @@ function Auth() {
               Mail that <b>cannot be lost.</b>
             </div>
             <div>
-              Weavemail is mail that <b>you own.</b>
+              Weavy is mail that <b>you own.</b>
             </div>
           </div>
           <div className="get-wallet-container">
