@@ -42,7 +42,7 @@ function MailBoxTopBar() {
       </div>
       <div className="mailbox-top-bar-right">
         <div className="last-synced-container">
-          Last synced {moment(lastSyncTime).format("LT")}
+          Last synced at {moment(lastSyncTime).format("LT")}
         </div>
         <div className="pagination-content-container">
           {startingPagination}-{endingPagination} of {backupMails.length}
