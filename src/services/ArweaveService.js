@@ -107,7 +107,8 @@ export default class ArweaveService {
           tx_row["id"] = id;
           tx_row["tx_status"] = await arweave.transactions.getStatus(id);
           let from_address = await arweave.wallets.ownerToAddress(tx.owner);
-          tx_row["from"] = await this.getName(from_address);
+          const from_name = await this.getName(from_address);
+          tx_row["from"] = from_name;
           tx_row["tx_qty"] = arweave.ar.winstonToAr(tx.quantity);
           let key = await CryptoService.wallet_to_key(wallet);
           let mail = arweave.utils.bufferToString(
@@ -260,7 +261,7 @@ export default class ArweaveService {
     if (txs.data.length === 0) return addr;
 
     const tx = await this.arweave.transactions.get(txs.data[0]);
-
+    console.log(tx);
     return tx.get("data", { decode: true, string: true });
   };
 }

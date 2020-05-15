@@ -1,8 +1,11 @@
 import React from "react";
 import "./Header.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faBell, faCopy } from "@fortawesome/free-solid-svg-icons";
-import {} from "@fortawesome/free-regular-svg-icons";
+import {
+  faSearch,
+  faCopy,
+  faExternalLinkSquareAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import makeBlockie from "ethereum-blockies-base64";
 import { ActionContext, StateContext } from "../../hook";
 import copy from "clipboard-copy";
@@ -17,6 +20,12 @@ function Header() {
   };
   const copyWalletAddress = () => {
     copy(walletAddress);
+  };
+  const openArweaveIdLink = () => {
+    window.open(
+      "https://alz4bdsrvmoz.arweave.net/fGUdNmXFmflBMGI2f9vD7KzsrAc1s1USQgQLgAVT0W0",
+      "_blank"
+    );
   };
   return (
     <div className="header">
@@ -67,6 +76,12 @@ function Header() {
             </div>
             <div className="wallet-address-copy">
               <FontAwesomeIcon icon={faCopy} />
+            </div>
+          </div>
+          <div className="wallet-address-container" onClick={openArweaveIdLink}>
+            <div className="dropdown-title">Configure ArweaveId</div>
+            <div className="wallet-address-copy">
+              <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
             </div>
           </div>
           <div className="dropdown-menu-button-container">
