@@ -35,9 +35,9 @@ function Header() {
         </div>
       </div>
       <div className="user-profile-container">
-        <div className="notification-container">
+        {/* <div className="notification-container">
           <FontAwesomeIcon icon={faBell} />
-        </div>
+        </div> */}
         <div onClick={(e) => setShowDropdown(!showDropdown)}>
           <img
             src={makeBlockie("jeNnvxnU0qguF-xj3k1hMYlSHgEOMAxtpeYBwKy1r9k")}
