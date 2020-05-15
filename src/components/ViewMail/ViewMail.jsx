@@ -38,7 +38,7 @@ function ViewMail() {
   ]);
   const sendReply = async () => {
     setNotification("Sending reply...");
-    const recipient = selectedMail.from;
+    const recipient = selectedMail.from_address;
     const subject = selectedMail.subject;
     const stringifyContent = JSON.stringify(content);
     var mailTagUnixTime = Math.round(new Date().getTime() / 1000);

@@ -109,6 +109,7 @@ export default class ArweaveService {
           let from_address = await arweave.wallets.ownerToAddress(tx.owner);
           const from_name = await this.getName(from_address);
           tx_row["from"] = from_name;
+          tx_row["from_address"] = from_address;
           tx_row["tx_qty"] = arweave.ar.winstonToAr(tx.quantity);
           let key = await CryptoService.wallet_to_key(wallet);
           let mail = arweave.utils.bufferToString(
