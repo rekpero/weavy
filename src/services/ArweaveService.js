@@ -234,6 +234,7 @@ export default class ArweaveService {
   };
 
   static getName = async (addr) => {
+    console.log(addr);
     let get_name_query = {
       op: "and",
       expr1: {
@@ -257,10 +258,11 @@ export default class ArweaveService {
     };
 
     const txs = await arweave.api.post(`arql`, get_name_query);
+    console.log(txs);
 
     if (txs.data.length === 0) return addr;
 
-    const tx = await this.arweave.transactions.get(txs.data[0]);
+    const tx = await arweave.transactions.get(txs.data[0]);
     console.log(tx);
     return tx.get("data", { decode: true, string: true });
   };
