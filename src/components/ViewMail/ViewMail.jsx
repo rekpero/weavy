@@ -45,8 +45,9 @@ function ViewMail() {
     let finalTokens = "";
     if (tokens === "") {
       finalTokens = "0";
+    } else {
+      finalTokens = ArweaveService.convertToWinston(tokens);
     }
-    finalTokens = ArweaveService.convertToWinston(tokens);
 
     var pub_key = await CryptoService.get_public_key(recipient);
 

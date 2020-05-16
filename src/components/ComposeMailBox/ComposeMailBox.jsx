@@ -28,10 +28,12 @@ function ComposeMailBox() {
     const stringifyContent = JSON.stringify(content);
     var mailTagUnixTime = Math.round(new Date().getTime() / 1000);
     let finalTokens = "";
+    console.log(tokens);
     if (tokens === "") {
       finalTokens = "0";
+    } else {
+      finalTokens = ArweaveService.convertToWinston(tokens);
     }
-    finalTokens = ArweaveService.convertToWinston(tokens);
 
     var pub_key = await CryptoService.get_public_key(recipient);
 
