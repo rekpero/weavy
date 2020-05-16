@@ -31,7 +31,7 @@ function Home() {
       }, 60000);
       setFirstTime(false);
     }
-  }, []);
+  }, [wallet]);
   return (
     <div className="home">
       {mailLoader && (

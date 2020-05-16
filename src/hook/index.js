@@ -136,6 +136,7 @@ export const AppProvider = (props) => {
         sessionStorage.removeItem("wallet");
         sessionStorage.removeItem("walletAddress");
         dispatch({ type: "SIGN_OUT" });
+        dispatch({ type: "SET_FIRST_TIME", firstTime: true });
       },
       restoreWallet: () => {
         const data = {

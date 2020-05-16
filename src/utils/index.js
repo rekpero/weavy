@@ -9,5 +9,5 @@ export function shortenAddress(pAddress, pDigits = 4) {
   }
 }
 
-export const APP_NAME = "weave-mail-revamp";
-export const APP_VERSION = "v0.0.0beta1";
+export const APP_NAME = "permamail";
+export const APP_VERSION = "0.0.2";

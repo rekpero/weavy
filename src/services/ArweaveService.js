@@ -143,7 +143,17 @@ export default class ArweaveService {
           }
 
           tx_row["subject"] = mail.subject;
-          tx_row["body"] = JSON.parse(mail.body);
+          try {
+            tx_row["body"] = JSON.parse(mail.body);
+          } catch (err) {
+            const body = [
+              {
+                type: "paragraph",
+                children: [{ text: mail.body }],
+              },
+            ];
+            tx_row["body"] = body;
+          }
           return tx_row;
         })
       );
