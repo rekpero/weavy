@@ -4,7 +4,6 @@ import makeBlockie from "ethereum-blockies-base64";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWallet,
-  faTrash,
   faStar as faSolidStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
@@ -19,6 +18,7 @@ function MailBoxContent() {
     selectedMail,
     selectedMenu,
     starredMails,
+    draftMails,
     wallet,
     walletAddress,
   } = React.useContext(StateContext);
@@ -30,6 +30,7 @@ function MailBoxContent() {
     setNotification("Mail has been starred");
   };
 
+  console.log(draftMails);
   return (
     <div className="mailbox-content">
       {selectedMenu === "inbox" &&
@@ -149,6 +150,65 @@ function MailBoxContent() {
                 <span className="mail-starred starred-disabled">
                   <FontAwesomeIcon icon={faSolidStar} />
                 </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      {selectedMenu === "draft" &&
+        draftMails.map((mail, id) => (
+          <div
+            className={`mail-item`}
+            key={id}
+            onClick={(e) => selectMail(mail)}
+          >
+            {/* <div className="select-mail-container">
+              <input type="checkbox" className="filled" />
+            </div> */}
+            <div className="user-profile-icon-container">
+              {mail.to && (
+                <img
+                  src={makeBlockie(mail.to)}
+                  alt="address-blockie"
+                  className="user-profile-blockie-icon"
+                />
+              )}
+            </div>
+            <div className="mail-content-container">
+              <div className="mail-user-container">
+                <span className="mail-user-name-container">
+                  <span className="mail-user-name">
+                    {mail.to ? shortenAddress(mail.to) : "Draft"}
+                  </span>
+                  <span className="mail-user-wallet">
+                    <FontAwesomeIcon icon={faWallet} />
+                  </span>
+                  <span className="mail-user-wallet-amount">
+                    {Number.parseFloat(
+                      mail.tx_qty === "" ? 0 : mail.tx_qty
+                    ).toFixed(2)}{" "}
+                    AR
+                  </span>
+                </span>
+                <span className="mail-time">
+                  {moment.unix(mail.unixTime).fromNow()}
+                </span>
+                {/* <span className="mail-trash">
+                <FontAwesomeIcon icon={faTrash} />
+              </span> */}
+              </div>
+              <div className="mail-subject">
+                {mail.subject ? mail.subject : "(no subject)"}
+              </div>
+              <div className="mail-body-container">
+                <span className="mail-body">
+                  {mail.body
+                    .flatMap((body) => body.children)
+                    .map((body) => body.text)
+                    .reduce((prevText, currText) => prevText + " " + currText)}
+                </span>
+                {/* <span className="mail-starred starred-disabled">
+                  <FontAwesomeIcon icon={faSolidStar} />
+                </span> */}
               </div>
             </div>
           </div>

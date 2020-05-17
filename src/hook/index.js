@@ -63,6 +63,11 @@ export const AppProvider = (props) => {
             ...prevState,
             starredMails: action.starredMails,
           };
+        case "SET_DRAFT_MAIL":
+          return {
+            ...prevState,
+            draftMails: action.draftMails,
+          };
         case "SET_FIRST_TIME_LOADER":
           return {
             ...prevState,
@@ -93,6 +98,11 @@ export const AppProvider = (props) => {
             ...prevState,
             notificationMessage: action.notificationMessage,
           };
+        case "SET_SELECTED_DRAFT_MAIL":
+          return {
+            ...prevState,
+            selectedDraft: action.selectedDraft,
+          };
         default:
       }
     },
@@ -104,6 +114,9 @@ export const AppProvider = (props) => {
       allMail: [],
       backupMails: [],
       starredMails: [],
+      draftMails: JSON.parse(sessionStorage.getItem("draftMails"))
+        ? JSON.parse(sessionStorage.getItem("draftMails"))
+        : [],
       selectedMail: null,
       selectedMenu: "inbox",
       firstTimeLoader: false,
@@ -115,6 +128,19 @@ export const AppProvider = (props) => {
       paginationConfig: {
         current: 1,
         count: 10,
+      },
+      selectedDraft: {
+        to: "",
+        subject: "",
+        body: [
+          {
+            type: "paragraph",
+            children: [{ text: "" }],
+          },
+        ],
+        tx_qty: "",
+        unixTime: Math.round(new Date().getTime() / 1000),
+        isDraft: true,
       },
     }
   );
@@ -189,6 +215,12 @@ export const AppProvider = (props) => {
       },
       setFirstTime: async (firstTime) => {
         dispatch({ type: "SET_FIRST_TIME", firstTime });
+      },
+      setDraftMails: async (draftMails) => {
+        dispatch({ type: "SET_DRAFT_MAIL", draftMails });
+      },
+      setSelectedDraftMails: async (selectedDraft) => {
+        dispatch({ type: "SET_SELECTED_DRAFT_MAIL", selectedDraft });
       },
       selectMenu: async (menu) => {
         dispatch({ type: "MAIL_SELECTED", mail: null });

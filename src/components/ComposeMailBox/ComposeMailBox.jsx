@@ -7,58 +7,106 @@ import { ActionContext, StateContext } from "../../hook";
 import { ArweaveService, CryptoService } from "../../services";
 
 function ComposeMailBox() {
-  const { toggleComposeMail, setNotification } = React.useContext(
-    ActionContext
-  );
-  const { wallet } = React.useContext(StateContext);
+  const {
+    toggleComposeMail,
+    setNotification,
+    setDraftMails,
+    selectMail,
+  } = React.useContext(ActionContext);
+  const { wallet, selectedDraft } = React.useContext(StateContext);
 
   const [collapse, setCollapse] = React.useState(false);
-  const [recipient, setRecipient] = React.useState("");
-  const [subject, setSubject] = React.useState("");
-  const [tokens, setTokens] = React.useState("");
-  const [content, setContent] = React.useState([
-    {
-      type: "paragraph",
-      children: [{ text: "" }],
-    },
-  ]);
+  const [recipient, setRecipient] = React.useState(selectedDraft.to);
+  const [subject, setSubject] = React.useState(selectedDraft.subject);
+  const [tokens, setTokens] = React.useState(selectedDraft.tx_qty);
+  const [content, setContent] = React.useState(selectedDraft.body);
+
+  const checkEmptyContent = (content) => {
+    if (
+      content.length === 1 &&
+      content[0].children.length === 1 &&
+      content[0].children[0].text === ""
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  console.log(selectedDraft);
+
+  const saveAndClose = () => {
+    if (recipient || subject || !checkEmptyContent(content) || tokens) {
+      const randomID = (Math.random() * 1e32).toString(36).substring(0, 10);
+      let mailItem = {
+        id: selectedDraft.id ? selectedDraft.id : randomID,
+        to: recipient,
+        subject: subject,
+        body: content,
+        tx_qty: tokens === "" ? "0" : tokens,
+        unixTime: Math.round(new Date().getTime() / 1000),
+        isDraft: true,
+      };
+
+      let sessionDrafts = sessionStorage.getItem("draftMails");
+      let drafts;
+
+      if (sessionDrafts !== null) {
+        drafts = JSON.parse(sessionDrafts);
+      } else {
+        drafts = [];
+      }
+      if (selectedDraft.id) {
+        drafts = drafts.filter((draft) => draft.id !== selectedDraft.id);
+        selectMail(mailItem);
+      }
+      sessionStorage.setItem(
+        "draftMails",
+        JSON.stringify([...drafts, mailItem])
+      );
+      setDraftMails([...drafts, mailItem]);
+    }
+    toggleComposeMail(false);
+  };
 
   const sendMail = async () => {
-    setNotification("Sending mail...");
-    const stringifyContent = JSON.stringify(content);
-    var mailTagUnixTime = Math.round(new Date().getTime() / 1000);
-    let finalTokens = "";
-    console.log(tokens);
-    if (tokens === "") {
-      finalTokens = "0";
+    if (recipient) {
+      setNotification("Sending mail...");
+      const stringifyContent = JSON.stringify(content);
+      var mailTagUnixTime = Math.round(new Date().getTime() / 1000);
+      let finalTokens = "";
+      if (tokens === "") {
+        finalTokens = "0";
+      } else {
+        finalTokens = ArweaveService.convertToWinston(tokens);
+      }
+
+      var pub_key = await CryptoService.get_public_key(recipient);
+
+      if (pub_key === undefined) {
+        alert("Recipient has to send a transaction to the network, first!");
+        return;
+      }
+      const finalContent = await CryptoService.encrypt_mail(
+        stringifyContent,
+        subject,
+        pub_key
+      );
+      await ArweaveService.sendMail(
+        recipient,
+        finalTokens,
+        finalContent,
+        wallet,
+        mailTagUnixTime
+      );
+      setRecipient("");
+      setSubject("");
+      setTokens("");
+      setContent("");
+      toggleComposeMail(false);
+      setNotification("Mail has been sent");
     } else {
-      finalTokens = ArweaveService.convertToWinston(tokens);
+      setNotification("Please add a recipient");
     }
-
-    var pub_key = await CryptoService.get_public_key(recipient);
-
-    if (pub_key === undefined) {
-      alert("Recipient has to send a transaction to the network, first!");
-      return;
-    }
-    const finalContent = await CryptoService.encrypt_mail(
-      stringifyContent,
-      subject,
-      pub_key
-    );
-    await ArweaveService.sendMail(
-      recipient,
-      finalTokens,
-      finalContent,
-      wallet,
-      mailTagUnixTime
-    );
-    setRecipient("");
-    setSubject("");
-    setTokens("");
-    setContent("");
-    toggleComposeMail(false);
-    setNotification("Mail has been sent");
   };
 
   return (
@@ -76,7 +124,7 @@ function ComposeMailBox() {
         </div>
         <div
           className="compose-mail-header-close"
-          onClick={(e) => toggleComposeMail(false)}
+          onClick={(e) => saveAndClose()}
         >
           <FontAwesomeIcon icon={faTimes} />
         </div>
@@ -89,6 +137,7 @@ function ComposeMailBox() {
               placeholder="Recipient"
               className="compose-body-recipient-input"
               autoFocus
+              value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
             />
           </div>
@@ -97,6 +146,7 @@ function ComposeMailBox() {
               type="text"
               placeholder="Subject"
               className="compose-body-subject-input"
+              value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
           </div>
@@ -105,6 +155,7 @@ function ComposeMailBox() {
               type="number"
               placeholder="0 Ar"
               className="compose-body-amount-input"
+              value={tokens}
               onChange={(e) => setTokens(e.target.value)}
             />
           </div>

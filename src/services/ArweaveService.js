@@ -54,6 +54,7 @@ export default class ArweaveService {
       },
       wallet
     );
+    console.log(tx);
 
     tx.addTag("App-Name", APP_NAME);
     tx.addTag("App-Version", APP_VERSION);

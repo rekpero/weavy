@@ -46,17 +46,15 @@ export default class CryptoService {
   static get_public_key = async (address) => {
     var txid = await arweave.wallets.getLastTransactionID(address);
 
-    if (txid == "") {
+    if (txid === "") {
       return undefined;
     }
 
     var tx = await arweave.transactions.get(txid);
 
-    if (tx == undefined) {
+    if (tx === undefined) {
       return undefined;
     }
-
-    var pub_key = arweave.utils.b64UrlToBuffer(tx.owner);
 
     var keyData = {
       kty: "RSA",

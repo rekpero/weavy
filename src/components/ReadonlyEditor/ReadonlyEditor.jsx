@@ -1,11 +1,11 @@
 import React, { useCallback, useState, useMemo, useEffect } from "react";
 import "./ReadonlyEditor.scss";
 import isHotkey from "is-hotkey";
-import { Editable, withReact, useSlate, Slate } from "slate-react";
-import { Editor, Transforms, createEditor } from "slate";
+import { Editable, withReact, Slate } from "slate-react";
+import { Editor, createEditor } from "slate";
 import { withHistory } from "slate-history";
 
-import { Button, Icon, Toolbar } from "./components";
+// import { Button, Icon } from "./components";
 
 const HOTKEYS = {
   "mod+b": "bold",
@@ -14,7 +14,7 @@ const HOTKEYS = {
   "mod+`": "code",
 };
 
-const LIST_TYPES = ["numbered-list", "bulleted-list"];
+// const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
 function ReadonlyEditor({ onValueChange, content }) {
   const [value, setValue] = useState(content);
@@ -62,24 +62,24 @@ function ReadonlyEditor({ onValueChange, content }) {
   );
 }
 
-const toggleBlock = (editor, format) => {
-  const isActive = isBlockActive(editor, format);
-  const isList = LIST_TYPES.includes(format);
+// const toggleBlock = (editor, format) => {
+//   const isActive = isBlockActive(editor, format);
+//   const isList = LIST_TYPES.includes(format);
 
-  Transforms.unwrapNodes(editor, {
-    match: (n) => LIST_TYPES.includes(n.type),
-    split: true,
-  });
+//   Transforms.unwrapNodes(editor, {
+//     match: (n) => LIST_TYPES.includes(n.type),
+//     split: true,
+//   });
 
-  Transforms.setNodes(editor, {
-    type: isActive ? "paragraph" : isList ? "list-item" : format,
-  });
+//   Transforms.setNodes(editor, {
+//     type: isActive ? "paragraph" : isList ? "list-item" : format,
+//   });
 
-  if (!isActive && isList) {
-    const block = { type: format, children: [] };
-    Transforms.wrapNodes(editor, block);
-  }
-};
+//   if (!isActive && isList) {
+//     const block = { type: format, children: [] };
+//     Transforms.wrapNodes(editor, block);
+//   }
+// };
 
 const toggleMark = (editor, format) => {
   const isActive = isMarkActive(editor, format);
@@ -91,13 +91,13 @@ const toggleMark = (editor, format) => {
   }
 };
 
-const isBlockActive = (editor, format) => {
-  const [match] = Editor.nodes(editor, {
-    match: (n) => n.type === format,
-  });
+// const isBlockActive = (editor, format) => {
+//   const [match] = Editor.nodes(editor, {
+//     match: (n) => n.type === format,
+//   });
 
-  return !!match;
-};
+//   return !!match;
+// };
 
 const isMarkActive = (editor, format) => {
   const marks = Editor.marks(editor);
@@ -143,71 +143,34 @@ const Leaf = ({ attributes, children, leaf }) => {
   return <span {...attributes}>{children}</span>;
 };
 
-const BlockButton = ({ format, icon }) => {
-  const editor = useSlate();
-  return (
-    <Button
-      active={isBlockActive(editor, format)}
-      onMouseDown={(event) => {
-        event.preventDefault();
-        toggleBlock(editor, format);
-      }}
-    >
-      <Icon>{icon}</Icon>
-    </Button>
-  );
-};
+// const BlockButton = ({ format, icon }) => {
+//   const editor = useSlate();
+//   return (
+//     <Button
+//       active={isBlockActive(editor, format)}
+//       onMouseDown={(event) => {
+//         event.preventDefault();
+//         toggleBlock(editor, format);
+//       }}
+//     >
+//       <Icon>{icon}</Icon>
+//     </Button>
+//   );
+// };
 
-const MarkButton = ({ format, icon }) => {
-  const editor = useSlate();
-  return (
-    <Button
-      active={isMarkActive(editor, format)}
-      onMouseDown={(event) => {
-        event.preventDefault();
-        toggleMark(editor, format);
-      }}
-    >
-      <Icon>{icon}</Icon>
-    </Button>
-  );
-};
-
-const initialValue = [
-  {
-    type: "paragraph",
-    children: [
-      { text: "This is editable " },
-      { text: "rich", bold: true },
-      { text: " text, " },
-      { text: "much", italic: true },
-      { text: " better than a " },
-      { text: "<textarea>", code: true },
-      { text: "!" },
-    ],
-  },
-  {
-    type: "paragraph",
-    children: [
-      {
-        text:
-          "Since it's rich text, you can do things like turn a selection of text ",
-      },
-      { text: "bold", bold: true },
-      {
-        text:
-          ", or add a semantically rendered block quote in the middle of the page, like this:",
-      },
-    ],
-  },
-  {
-    type: "block-quote",
-    children: [{ text: "A wise quote." }],
-  },
-  {
-    type: "paragraph",
-    children: [{ text: "Try it out for yourself!" }],
-  },
-];
+// const MarkButton = ({ format, icon }) => {
+//   const editor = useSlate();
+//   return (
+//     <Button
+//       active={isMarkActive(editor, format)}
+//       onMouseDown={(event) => {
+//         event.preventDefault();
+//         toggleMark(editor, format);
+//       }}
+//     >
+//       <Icon>{icon}</Icon>
+//     </Button>
+//   );
+// };
 
 export default ReadonlyEditor;

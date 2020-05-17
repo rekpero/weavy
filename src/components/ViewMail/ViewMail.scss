@@ -224,17 +224,38 @@
           margin-top: 1em;
           padding: 8px 0px;
 
-          .view-mail-body-action-button {
-            padding: 6px 32px;
-            border: 1px solid var(--bodyBg);
-            border-radius: 4px;
-            margin-right: 1em;
-            cursor: pointer;
-            &:hover {
-              background: var(--hoverBackground);
+          .draft-action-button-container {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            .view-mail-body-action-button {
+              padding: 6px 32px;
+              border: 1px solid var(--bodyBg);
+              border-radius: 4px;
+              margin-right: 1em;
+              cursor: pointer;
+              &:hover {
+                background: var(--hoverBackground);
+              }
+              .view-mail-body-action-icon {
+                margin-right: 12px;
+              }
             }
-            .view-mail-body-action-icon {
-              margin-right: 12px;
+          }
+
+          .draft-action-delete-container {
+            .view-mail-body-content-trash {
+              height: 36px;
+              width: 36px;
+              display: flex;
+              margin-right: 0.5em;
+              align-items: center;
+              justify-content: center;
+              border-radius: 50%;
+              cursor: pointer;
+              &:hover {
+                background-color: var(--hoverBackground);
+              }
             }
           }
         }
