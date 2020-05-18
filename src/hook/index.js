@@ -14,18 +14,21 @@ export const AppProvider = (props) => {
             ...prevState,
             wallet: action.wallet.walletPrivateKey,
             walletAddress: action.wallet.walletAddress,
+            userName: action.wallet.userName,
           };
         case "SIGN_IN":
           return {
             ...prevState,
             wallet: action.wallet.walletPrivateKey,
             walletAddress: action.wallet.walletAddress,
+            userName: action.wallet.userName,
           };
         case "SIGN_OUT":
           return {
             ...prevState,
             wallet: null,
             walletAddress: "",
+            userName: ""
           };
         case "TOGGLE_COMPOSE_MAIL":
           return {
@@ -110,6 +113,7 @@ export const AppProvider = (props) => {
       isMailLoading: true,
       wallet: JSON.parse(sessionStorage.getItem("wallet")),
       walletAddress: JSON.parse(sessionStorage.getItem("walletAddress")),
+      userName: JSON.parse(sessionStorage.getItem("userName")),
       openComposeMail: false,
       allMail: [],
       backupMails: [],
@@ -147,7 +151,9 @@ export const AppProvider = (props) => {
 
   const actionContext = useMemo(
     () => ({
-      signIn: (pData) => {
+      signIn: async (pData) => {
+        pData.userName = await ArweaveService.getName(pData.walletAddress);
+        console.log(pData.userName)
         sessionStorage.setItem(
           "wallet",
           JSON.stringify(pData.walletPrivateKey)
@@ -156,18 +162,25 @@ export const AppProvider = (props) => {
           "walletAddress",
           JSON.stringify(pData.walletAddress)
         );
+        sessionStorage.setItem(
+          "userName",
+          JSON.stringify(pData.userName)
+        );
         dispatch({ type: "SIGN_IN", wallet: pData });
       },
       signOut: () => {
         sessionStorage.removeItem("wallet");
         sessionStorage.removeItem("walletAddress");
+        sessionStorage.removeItem("userName");
         dispatch({ type: "SIGN_OUT" });
         dispatch({ type: "SET_FIRST_TIME", firstTime: true });
       },
       restoreWallet: () => {
+        console.log(sessionStorage.getItem("userName"))
         const data = {
           walletPrivateKey: JSON.parse(sessionStorage.getItem("wallet")),
           walletAddress: JSON.parse(sessionStorage.getItem("walletAddress")),
+          userName: JSON.parse(sessionStorage.getItem("userName")),
         };
         dispatch({ type: "RESTORE_TOKEN", wallet: data });
       },
