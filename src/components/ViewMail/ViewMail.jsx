@@ -381,12 +381,12 @@ function ViewMail() {
             </div>
             <div className="view-mail-body-content-container">
               <div className="view-mail-body-content-header">
-                <span className="view-mail-body-content-reply">
+                <div className="view-mail-body-content-reply">
                   <FontAwesomeIcon icon={faReply} />
-                </span>
-                <span className="view-mail-body-content-user-reply">
+                </div>
+                <div className="view-mail-body-content-user-reply">
                   {selectedMail.from}
-                </span>
+                </div>
               </div>
               <div className="reply-body-amount">
                 <input
@@ -433,10 +433,10 @@ function ViewMail() {
             </div>
             <div className="view-mail-body-content-container">
               <div className="view-mail-body-content-header">
-                <span className="view-mail-body-content-reply">
+                <div className="view-mail-body-content-reply">
                   <FontAwesomeIcon icon={faShare} />
-                </span>
-                <span className="view-mail-body-content-user-reply">
+                </div>
+                <div className="view-mail-body-content-user-reply">
                   <input
                     type="text"
                     placeholder="Recipient"
@@ -445,7 +445,7 @@ function ViewMail() {
                     value={recipient}
                     onChange={(e) => setRecipient(e.target.value)}
                   />
-                </span>
+                </div>
               </div>
               <div className="reply-body-amount">
                 <input

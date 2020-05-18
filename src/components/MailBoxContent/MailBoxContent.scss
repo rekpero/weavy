@@ -240,3 +240,61 @@
     }
   }
 }
+
+$information-phone: "only screen and (max-width : 414px)";
+$information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
+@media #{$information-phone} {
+  .mailbox-content {
+    flex-direction: row;
+    .mail-item {
+      border-right: 1px solid #c7c7c791;
+      font-size: 12px;
+      .user-profile-blockie-icon {
+        height: 32px !important;
+        width: 32px !important;
+      }
+    
+    .mail-content-container {
+      width: 218px;
+      .mail-user-container {
+        align-items: baseline;
+        .mail-user-name-container {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+    .mail-subject {
+      font-size: 14px !important;
+    }
+  }
+  }
+}
+
+@media #{$information-pad} {
+  .mailbox-content {
+    flex-direction: row;
+    .mail-item {
+      border-right: 1px solid #c7c7c791;
+      font-size: 14px;
+      .user-profile-blockie-icon {
+        height: 32px !important;
+        width: 32px !important;
+      }
+    
+    .mail-content-container {
+      width: 218px;
+      .mail-user-container {
+        align-items: baseline;
+        .mail-user-name-container {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+    .mail-subject {
+      font-size: 16px !important;
+    }
+  }
+  }
+}

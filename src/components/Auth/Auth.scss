@@ -89,4 +89,24 @@
       }
     }
   }
+
 }
+
+$information-phone: "only screen and (max-width : 414px)";
+$information-pad: "only screen and (max-width : 768px) and (min-width: 414px)";
+@media #{$information-phone} {
+  .auth {
+    width: 268px !important;
+    .wallet-input-field {
+      margin: 0px 1em !important;
+    }
+
+    .get-wallet-container {
+      margin: 0em !important;
+      .get-wallet-button {
+        padding: 10px 12px !important;
+      }
+    }
+  }
+}
+

@@ -227,3 +227,25 @@
     }
   }
 }
+
+$information-phone: "only screen and (max-width : 414px)";
+$information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
+@media #{$information-phone} {
+  .mailbox-top-bar {
+    font-size: 12px;
+    .mailbox-top-bar-right {
+      width: 93%;
+      justify-content: flex-end;
+    }
+  }
+}
+
+@media #{$information-pad} {
+  .mailbox-top-bar {
+    font-size: 14px;
+    .mailbox-top-bar-right {
+      width: 93%;
+      justify-content: flex-end;
+    }
+  }
+}

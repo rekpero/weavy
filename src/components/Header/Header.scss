@@ -7,10 +7,11 @@
     width: 15%;
     .logo-name {
       margin: 0;
-      padding-inline-start: 2em;
-      font-size: 24px;
-      font-weight: 400;
-      color: var(--labelColor);
+      padding-inline-start: 1em;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--textColor);
+      font-family: var(--appNameFont);
     }
   }
   .search-bar-container {
@@ -144,6 +145,75 @@
           border: 1px solid var(--themeColorDark);
         }
       }
+    }
+  }
+}
+
+$information-phone: "only screen and (max-width : 414px)";
+$information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
+@media #{$information-phone} {
+  .header {
+    .logo-container {
+      width: 25% !important;
+      margin-right: 10px;
+      .logo-name {
+        padding-inline-start: 1em !important;
+    font-size: 18px !important;
+      }
+    }
+    .search-bar-container {
+      width: 70%;
+
+      .search-bar {
+        width: 75% !important;
+    padding: 0.5em 1em !important;
+    .search-bar-input {
+      font-size: 14px !important;
+      padding-inline-start: 0.5em !important;
+      width: 100% !important;
+    }
+      }
+    }
+    .user-profile-blockie-icon {
+      height: 32px !important;
+      width: 32px !important;  
+    }
+
+    .toolbar-dropdown-box {
+      font-size: 12px !important;
+    }
+  }
+}
+
+@media #{$information-pad} {
+  .header {
+    .logo-container {
+      width: 25% !important;
+      margin-right: 10px;
+      .logo-name {
+        padding-inline-start: 1em !important;
+    font-size: 24px !important;
+      }
+    }
+    .search-bar-container {
+      width: 70%;
+
+      .search-bar {
+        width: 75% !important;
+    padding: 0.5em 1em !important;
+    .search-bar-input {
+      font-size: 16px !important;
+      padding-inline-start: 0.5em !important;
+      width: 100% !important;
+    }
+      }
+    }
+    .user-profile-blockie-icon {
+      height: 32px !important;
+      width: 32px !important;  
+    }
+    .toolbar-dropdown-box {
+      font-size: 12px !important;
     }
   }
 }

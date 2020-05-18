@@ -30,7 +30,6 @@ function MailBoxContent() {
     setNotification("Mail has been starred");
   };
 
-  console.log(draftMails);
   return (
     <div className="mailbox-content">
       {selectedMenu === "inbox" &&
@@ -58,11 +57,14 @@ function MailBoxContent() {
                   <span className="mail-user-name">
                     {shortenAddress(mail.from)}
                   </span>
+                  <span>
+
                   <span className="mail-user-wallet">
                     <FontAwesomeIcon icon={faWallet} />
                   </span>
                   <span className="mail-user-wallet-amount">
                     {Number.parseFloat(mail.tx_qty).toFixed(2)} AR
+                  </span>
                   </span>
                 </span>
                 <span className="mail-time">
@@ -125,11 +127,14 @@ function MailBoxContent() {
                   <span className="mail-user-name">
                     {shortenAddress(mail.from)}
                   </span>
+                  <span>
+
                   <span className="mail-user-wallet">
                     <FontAwesomeIcon icon={faWallet} />
                   </span>
                   <span className="mail-user-wallet-amount">
                     {Number.parseFloat(mail.tx_qty).toFixed(2)} AR
+                  </span>
                   </span>
                 </span>
                 <span className="mail-time">
@@ -179,15 +184,18 @@ function MailBoxContent() {
                   <span className="mail-user-name">
                     {mail.to ? shortenAddress(mail.to) : "Draft"}
                   </span>
+                  <span>
+
                   <span className="mail-user-wallet">
                     <FontAwesomeIcon icon={faWallet} />
                   </span>
                   <span className="mail-user-wallet-amount">
                     {Number.parseFloat(
                       mail.tx_qty === "" ? 0 : mail.tx_qty
-                    ).toFixed(2)}{" "}
+                      ).toFixed(2)}{" "}
                     AR
                   </span>
+                      </span>
                 </span>
                 <span className="mail-time">
                   {moment.unix(mail.unixTime).fromNow()}

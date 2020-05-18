@@ -30,7 +30,7 @@ function Header() {
   return (
     <div className="header">
       <div className="logo-container">
-        <h3 className="logo-name">Weavy</h3>
+        <h3 className="logo-name">weavy.</h3>
       </div>
       <div className="search-bar-container">
         <div className="search-bar">
