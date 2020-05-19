@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWallet,
   faStar as faSolidStar,
+  faInbox,
+  faLink
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { StateContext, ActionContext } from "../../hook";
@@ -33,11 +35,11 @@ function MailBoxContent() {
   return (
     <div className="mailbox-content">
       {selectedMenu === "inbox" &&
-        allMail.map((mail, id) => (
+        allMail.length ? allMail.map((mail, id) => (
           <div
             className={`${
               selectedMail && selectedMail.id === mail.id ? "selected" : ""
-            } mail-item`}
+              } mail-item`}
             key={id}
             onClick={(e) => selectMail(mail)}
           >
@@ -58,12 +60,14 @@ function MailBoxContent() {
                     {shortenAddress(mail.from)}
                   </span>
                   <span>
-
-                  <span className="mail-user-wallet">
-                    <FontAwesomeIcon icon={faWallet} />
-                  </span>
-                  <span className="mail-user-wallet-amount">
-                    {Number.parseFloat(mail.tx_qty).toFixed(2)} AR
+                    {mail.attachments.length ? <span className="mail-user-wallet">
+                      <FontAwesomeIcon icon={faLink} />
+                    </span> : null}
+                    <span className="mail-user-wallet">
+                      <FontAwesomeIcon icon={faWallet} />
+                    </span>
+                    <span className="mail-user-wallet-amount">
+                      {Number.parseFloat(mail.tx_qty).toFixed(2)} AR
                   </span>
                   </span>
                 </span>
@@ -87,7 +91,7 @@ function MailBoxContent() {
                     starredMails.map((mail) => mail.id).includes(mail.id)
                       ? "starred-disabled"
                       : ""
-                  }`}
+                    }`}
                   onClick={(e) => starredMail(mail.id)}
                 >
                   <FontAwesomeIcon
@@ -101,13 +105,23 @@ function MailBoxContent() {
               </div>
             </div>
           </div>
-        ))}
+        )) : selectedMenu === "inbox" && (
+          <div className="no-mail-container">
+            <div>
+              <FontAwesomeIcon
+                className="no-mail-icon"
+                icon={faInbox}
+              ></FontAwesomeIcon>
+            </div>
+            <div>No Inbox Mail Found</div>
+          </div>
+        )}
       {selectedMenu === "starred" &&
-        starredMails.map((mail, id) => (
+        starredMails.length ? starredMails.map((mail, id) => (
           <div
             className={`${
               selectedMail && selectedMail.id === mail.id ? "selected" : ""
-            } mail-item`}
+              } mail-item`}
             key={id}
             onClick={(e) => selectMail(mail)}
           >
@@ -128,12 +142,14 @@ function MailBoxContent() {
                     {shortenAddress(mail.from)}
                   </span>
                   <span>
-
-                  <span className="mail-user-wallet">
-                    <FontAwesomeIcon icon={faWallet} />
-                  </span>
-                  <span className="mail-user-wallet-amount">
-                    {Number.parseFloat(mail.tx_qty).toFixed(2)} AR
+                    {mail.attachments.length ? <span className="mail-user-wallet">
+                      <FontAwesomeIcon icon={faLink} />
+                    </span> : null}
+                    <span className="mail-user-wallet">
+                      <FontAwesomeIcon icon={faWallet} />
+                    </span>
+                    <span className="mail-user-wallet-amount">
+                      {Number.parseFloat(mail.tx_qty).toFixed(2)} AR
                   </span>
                   </span>
                 </span>
@@ -158,9 +174,19 @@ function MailBoxContent() {
               </div>
             </div>
           </div>
-        ))}
+        )) : selectedMenu === "starred" && (
+          <div className="no-mail-container">
+            <div>
+              <FontAwesomeIcon
+                className="no-mail-icon"
+                icon={faInbox}
+              ></FontAwesomeIcon>
+            </div>
+            <div>No Starred Mail Found</div>
+          </div>
+        )}
       {selectedMenu === "draft" &&
-        draftMails.map((mail, id) => (
+        draftMails.length ? draftMails.map((mail, id) => (
           <div
             className={`mail-item`}
             key={id}
@@ -185,17 +211,19 @@ function MailBoxContent() {
                     {mail.to ? shortenAddress(mail.to) : "Draft"}
                   </span>
                   <span>
-
-                  <span className="mail-user-wallet">
-                    <FontAwesomeIcon icon={faWallet} />
-                  </span>
-                  <span className="mail-user-wallet-amount">
-                    {Number.parseFloat(
-                      mail.tx_qty === "" ? 0 : mail.tx_qty
+                    {mail.attachments.length ? <span className="mail-user-wallet">
+                      <FontAwesomeIcon icon={faLink} />
+                    </span> : null}
+                    <span className="mail-user-wallet">
+                      <FontAwesomeIcon icon={faWallet} />
+                    </span>
+                    <span className="mail-user-wallet-amount">
+                      {Number.parseFloat(
+                        mail.tx_qty === "" ? 0 : mail.tx_qty
                       ).toFixed(2)}{" "}
                     AR
                   </span>
-                      </span>
+                  </span>
                 </span>
                 <span className="mail-time">
                   {moment.unix(mail.unixTime).fromNow()}
@@ -220,7 +248,17 @@ function MailBoxContent() {
               </div>
             </div>
           </div>
-        ))}
+        )) : selectedMenu === "draft" && (
+          <div className="no-mail-container">
+            <div>
+              <FontAwesomeIcon
+                className="no-mail-icon"
+                icon={faInbox}
+              ></FontAwesomeIcon>
+            </div>
+            <div>No Draft Mail Found</div>
+          </div>
+        )}
     </div>
   );
 }

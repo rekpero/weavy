@@ -106,14 +106,19 @@ export const AppProvider = (props) => {
             ...prevState,
             selectedDraft: action.selectedDraft,
           };
+        case "SET_REFRESH_MAIL_TIMER":
+          return {
+            ...prevState,
+            refreshMailTimer: action.refreshMailTimer,
+          };
         default:
       }
     },
     {
       isMailLoading: true,
       wallet: JSON.parse(sessionStorage.getItem("wallet")),
-      walletAddress: JSON.parse(sessionStorage.getItem("walletAddress")),
-      userName: JSON.parse(sessionStorage.getItem("userName")),
+      walletAddress: sessionStorage.getItem("walletAddress"),
+      userName: sessionStorage.getItem("userName"),
       openComposeMail: false,
       allMail: [],
       backupMails: [],
@@ -133,6 +138,7 @@ export const AppProvider = (props) => {
         current: 1,
         count: 10,
       },
+      refreshMailTimer: null,
       selectedDraft: {
         to: "",
         subject: "",
@@ -142,6 +148,7 @@ export const AppProvider = (props) => {
             children: [{ text: "" }],
           },
         ],
+        attachments: [],
         tx_qty: "",
         unixTime: Math.round(new Date().getTime() / 1000),
         isDraft: true,
@@ -160,18 +167,19 @@ export const AppProvider = (props) => {
         );
         sessionStorage.setItem(
           "walletAddress",
-          JSON.stringify(pData.walletAddress)
+          pData.walletAddress
         );
         sessionStorage.setItem(
           "userName",
-          JSON.stringify(pData.userName)
+          pData.userName
         );
         dispatch({ type: "SIGN_IN", wallet: pData });
       },
-      signOut: () => {
+      signOut: (refreshMailTimer) => {
         sessionStorage.removeItem("wallet");
         sessionStorage.removeItem("walletAddress");
         sessionStorage.removeItem("userName");
+        clearInterval(refreshMailTimer);
         dispatch({ type: "SIGN_OUT" });
         dispatch({ type: "SET_FIRST_TIME", firstTime: true });
       },
@@ -179,8 +187,8 @@ export const AppProvider = (props) => {
         console.log(sessionStorage.getItem("userName"))
         const data = {
           walletPrivateKey: JSON.parse(sessionStorage.getItem("wallet")),
-          walletAddress: JSON.parse(sessionStorage.getItem("walletAddress")),
-          userName: JSON.parse(sessionStorage.getItem("userName")),
+          walletAddress: sessionStorage.getItem("walletAddress"),
+          userName: sessionStorage.getItem("userName"),
         };
         dispatch({ type: "RESTORE_TOKEN", wallet: data });
       },
@@ -208,7 +216,7 @@ export const AppProvider = (props) => {
           mails: { allMail: finalMails, backupMails: allMail },
         });
         const starredMailIds = await ArweaveService.getStarredMails(
-          JSON.parse(sessionStorage.getItem("walletAddress"))
+          sessionStorage.getItem("walletAddress")
         );
         const starredMails = allMail.filter((mail) =>
           starredMailIds.map((star) => star.mailTxId).includes(mail.id)
@@ -234,6 +242,9 @@ export const AppProvider = (props) => {
       },
       setSelectedDraftMails: async (selectedDraft) => {
         dispatch({ type: "SET_SELECTED_DRAFT_MAIL", selectedDraft });
+      },
+      setRefreshMailTimer: async (refreshMailTimer) => {
+        dispatch({ type: "SET_REFRESH_MAIL_TIMER", refreshMailTimer });
       },
       selectMenu: async (menu) => {
         dispatch({ type: "MAIL_SELECTED", mail: null });

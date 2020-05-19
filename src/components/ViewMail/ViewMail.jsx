@@ -12,12 +12,14 @@ import {
   faStar as faSolidStar,
   faEdit,
   faPaperPlane,
+  faLink
 } from "@fortawesome/free-solid-svg-icons";
 import MailEditor from "../MailEditor";
 import ReadonlyEditor from "../ReadonlyEditor";
 import { StateContext, ActionContext } from "../../hook";
 import { shortenAddress } from "../../utils";
 import { ArweaveService, CryptoService } from "../../services";
+import { parseFileSize } from "../../utils";
 import moment from "moment";
 
 function ViewMail() {
@@ -214,6 +216,17 @@ function ViewMail() {
     setNotification("Draft has been deleted");
   };
 
+  const getFileTypeIcon = (fileType) => {
+    try {
+      return (
+        <img src={require(`../../assets/icons/${fileType}.svg`)} alt="file-icon" className="file-type-icon" />
+      )
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+
   return (
     <div className="view-mail">
       <div className="view-mail-header">
@@ -259,14 +272,14 @@ function ViewMail() {
                 className="user-profile-blockie-icon"
               />
             ) : (
-              selectedMail.to && (
-                <img
-                  src={makeBlockie(selectedMail.to)}
-                  alt="address-blockie"
-                  className="user-profile-blockie-icon"
-                />
-              )
-            )}
+                selectedMail.to && (
+                  <img
+                    src={makeBlockie(selectedMail.to)}
+                    alt="address-blockie"
+                    className="user-profile-blockie-icon"
+                  />
+                )
+              )}
           </div>
           <div className="view-mail-body-content-container">
             <div className="view-mail-body-content-header">
@@ -275,8 +288,8 @@ function ViewMail() {
                   {!selectedMail.isDraft
                     ? shortenAddress(selectedMail.from)
                     : selectedMail.to
-                    ? shortenAddress(selectedMail.to)
-                    : "Draft"}
+                      ? shortenAddress(selectedMail.to)
+                      : "Draft"}
                 </span>
                 <span className="view-mail-body-content-user-wallet">
                   <span className="view-mail-body-content-wallet-icon">
@@ -313,6 +326,30 @@ function ViewMail() {
             <div className="view-mail-body-content">
               <ReadonlyEditor content={selectedMail.body}></ReadonlyEditor>
             </div>
+            {selectedMail.attachments.length ? <div className="compose-body-attachments-container">
+              <div className="compose-body-attachments-header-container">
+                <span className="compose-body-attachments-icon">
+                  <FontAwesomeIcon icon={faLink} />
+                </span>
+                <span>6 Attachments</span>
+              </div>
+              <div className="compose-body-attachments-body">
+                {selectedMail.attachments.map((attachment, i) => (
+                  <div key={i} className="attachments-item">
+                    <div className="attachments-item-icon-container">
+                      {getFileTypeIcon(attachment.type)}
+                    </div>
+                    <div className="attachments-item-details-container">
+                      <div className="attachments-item-name">{attachment.name}</div>
+                      <div className="attachments-item-size">{parseFileSize(attachment.size)}</div>
+                    </div>
+                    <div className="mail-trash">
+                      <FontAwesomeIcon icon={faTrash} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div> : null}
             <div className="view-mail-body-action-container">
               {!selectedMail.isDraft ? (
                 <div className="draft-action-button-container">
@@ -336,37 +373,37 @@ function ViewMail() {
                   </div>
                 </div>
               ) : (
-                <>
-                  <div className="draft-action-button-container">
-                    <div
-                      className="view-mail-body-action-button"
-                      onClick={sendMail}
-                    >
-                      <span className="view-mail-body-action-icon">
-                        <FontAwesomeIcon icon={faPaperPlane} />
-                      </span>
-                      <span>Send</span>
+                  <>
+                    <div className="draft-action-button-container">
+                      <div
+                        className="view-mail-body-action-button"
+                        onClick={sendMail}
+                      >
+                        <span className="view-mail-body-action-icon">
+                          <FontAwesomeIcon icon={faPaperPlane} />
+                        </span>
+                        <span>Send</span>
+                      </div>
+                      <div
+                        className="view-mail-body-action-button"
+                        onClick={openEditMail}
+                      >
+                        <span className="view-mail-body-action-icon">
+                          <FontAwesomeIcon icon={faEdit} />
+                        </span>
+                        <span>Edit</span>
+                      </div>
                     </div>
-                    <div
-                      className="view-mail-body-action-button"
-                      onClick={openEditMail}
-                    >
-                      <span className="view-mail-body-action-icon">
-                        <FontAwesomeIcon icon={faEdit} />
+                    <div className="draft-action-delete-container">
+                      <span
+                        className="view-mail-body-content-trash"
+                        onClick={deleteDraftMail}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
                       </span>
-                      <span>Edit</span>
                     </div>
-                  </div>
-                  <div className="draft-action-delete-container">
-                    <span
-                      className="view-mail-body-content-trash"
-                      onClick={deleteDraftMail}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </span>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
             </div>
           </div>
         </div>

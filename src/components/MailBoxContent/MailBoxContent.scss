@@ -1,8 +1,36 @@
+@mixin poCentering {
+  top: 50%;
+  right: 50%;
+  bottom: 50%;
+  left: 50%;
+  position: absolute;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
 .mailbox-content {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  max-height: calc(100vh - 128px);
+  height: calc(100vh - 128px);
+  position: relative;
+  .no-mail-container {
+    height: 200px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--labelColor);
+    font-size: 18px;
+    font-weight: 600;
+
+  @include poCentering();
+    .no-mail-icon {
+      font-size: 62px;
+      margin-bottom: 6px;
+    }
+  }
   .selected {
     background-color: var(--themeColorSelected);
     border-left: 4px solid var(--themeColor);

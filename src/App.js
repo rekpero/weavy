@@ -12,7 +12,7 @@ function App() {
   const { restoreWallet } = React.useContext(ActionContext);
 
   useEffect(() => {
-    restoreWallet();
+    // restoreWallet();
   }, []);
 
   return (

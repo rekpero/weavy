@@ -121,6 +121,7 @@ export default class ArweaveService {
           );
           try {
             mail = JSON.parse(mail);
+            console.log(mail)
           } catch (e) {
             console.log(e);
           }
@@ -143,7 +144,8 @@ export default class ArweaveService {
             throw new Error(`Unexpected mail format: ${mail}`);
           }
 
-          tx_row["subject"] = mail.subject;
+          tx_row["subject"] = JSON.parse(mail.subject).subject;
+          tx_row["attachments"] = JSON.parse(mail.subject).attachments;
           try {
             tx_row["body"] = JSON.parse(mail.body);
           } catch (err) {
