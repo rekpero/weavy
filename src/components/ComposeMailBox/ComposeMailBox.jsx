@@ -36,6 +36,7 @@ function ComposeMailBox() {
 
   const saveAndClose = () => {
     if (recipient || subject || !checkEmptyContent(content) || tokens) {
+      setNotification("Saving mail as draft...");
       const randomID = (Math.random() * 1e32).toString(36).substring(0, 10);
       let mailItem = {
         id: selectedDraft.id ? selectedDraft.id : randomID,
