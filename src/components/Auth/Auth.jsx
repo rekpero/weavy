@@ -2,9 +2,11 @@ import React from "react";
 import "./Auth.scss";
 import { ArweaveService } from "../../services";
 import { ActionContext } from "../../hook";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 function Auth() {
-  const { signIn } = React.useContext(ActionContext);
+  const { signIn, toggleLandingPage } = React.useContext(ActionContext);
   // load file to json
   const walletLogin = (file) => {
     let fileReader = new FileReader();
@@ -20,12 +22,19 @@ function Auth() {
     // props.setWallet(jwk, address);
   };
 
+  const goBackHome = () => {
+    toggleLandingPage(false);
+  };
+
   return (
     <div className="auth">
       <div className="widget-main-container">
+        <div className="back-button" onClick={goBackHome}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </div>
         <div className="widget-container">
           <div>
-            <h2 className="widget-title">Weavy</h2>
+            <h2 className="widget-title">weavy.</h2>
           </div>
           <div className="wallet-input-field">
             <input

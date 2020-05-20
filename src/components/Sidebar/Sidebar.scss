@@ -54,16 +54,42 @@
     transition: all 0.25s linear;
     .sidebar-item-main {
       flex-grow: 1;
+      .sidebar-item-icon {
+        width: 24px;
+      }
       .sidebar-item-title {
         margin-left: 8px;
       }
-    }
-    .sidebar-item-number {
     }
 
     &:hover {
       background-color: var(--hoverBackground);
       border-left: 4px solid;
+    }
+  }
+}
+
+$information-phone: "only screen and (max-width : 414px)";
+$information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
+@media #{$information-phone} {
+  .sidebar {
+    width: 100%;
+    border-bottom: 1px solid #c7c7c791;
+    font-size: 14px !important;
+
+    .compose-title {
+      font-size: 16px !important;
+    }
+  }
+}
+@media #{$information-pad} {
+  .sidebar {
+    width: 100%;
+    border-bottom: 1px solid #c7c7c791;
+    font-size: 14px !important;
+
+    .compose-title {
+      font-size: 16px !important;
     }
   }
 }

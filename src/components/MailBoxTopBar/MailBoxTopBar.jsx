@@ -3,7 +3,6 @@ import "./MailBoxTopBar.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRedoAlt,
-  faEllipsisV,
   faAngleLeft,
   faAngleRight,
 } from "@fortawesome/free-solid-svg-icons";

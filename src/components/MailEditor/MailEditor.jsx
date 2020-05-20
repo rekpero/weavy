@@ -179,11 +179,4 @@ const MarkButton = ({ format, icon }) => {
   );
 };
 
-const initialValue = [
-  {
-    type: "paragraph",
-    children: [{ text: "" }],
-  },
-];
-
 export default MailEditor;

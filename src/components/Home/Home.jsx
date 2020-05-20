@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react";
 import "./Home.scss";
 import Sidebar from "../Sidebar";
@@ -19,17 +20,21 @@ function Home() {
     showNotification,
     notificationMessage,
   } = React.useContext(StateContext);
-  const { refreshAllMail, setFirstTime, closeNotification } = React.useContext(
-    ActionContext
-  );
+  const {
+    refreshAllMail,
+    setFirstTime,
+    closeNotification,
+    setRefreshMailTimer,
+  } = React.useContext(ActionContext);
 
   React.useEffect(() => {
     if (firstTime) {
       refreshAllMail(wallet, true, lastSyncTime);
-      setInterval(() => {
+      const refreshMailTimer = setInterval(() => {
         refreshAllMail(wallet, false, lastSyncTime);
       }, 60000);
       setFirstTime(false);
+      setRefreshMailTimer(refreshMailTimer);
     }
   }, [wallet]);
   return (

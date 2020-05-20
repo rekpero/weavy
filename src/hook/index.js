@@ -14,23 +14,31 @@ export const AppProvider = (props) => {
             ...prevState,
             wallet: action.wallet.walletPrivateKey,
             walletAddress: action.wallet.walletAddress,
+            userName: action.wallet.userName,
           };
         case "SIGN_IN":
           return {
             ...prevState,
             wallet: action.wallet.walletPrivateKey,
             walletAddress: action.wallet.walletAddress,
+            userName: action.wallet.userName,
           };
         case "SIGN_OUT":
           return {
             ...prevState,
             wallet: null,
             walletAddress: "",
+            userName: "",
           };
         case "TOGGLE_COMPOSE_MAIL":
           return {
             ...prevState,
             openComposeMail: action.open,
+          };
+        case "TOGGLE_LANDING":
+          return {
+            ...prevState,
+            isLanding: action.isLanding,
           };
         case "ALL_MAIL_FETCHED":
           return {
@@ -63,6 +71,16 @@ export const AppProvider = (props) => {
             ...prevState,
             starredMails: action.starredMails,
           };
+        case "SET_DRAFT_MAIL":
+          return {
+            ...prevState,
+            draftMails: action.draftMails,
+          };
+        case "SET_SENT_MAIL":
+          return {
+            ...prevState,
+            sentMails: action.sentMails,
+          };
         case "SET_FIRST_TIME_LOADER":
           return {
             ...prevState,
@@ -93,17 +111,33 @@ export const AppProvider = (props) => {
             ...prevState,
             notificationMessage: action.notificationMessage,
           };
+        case "SET_SELECTED_DRAFT_MAIL":
+          return {
+            ...prevState,
+            selectedDraft: action.selectedDraft,
+          };
+        case "SET_REFRESH_MAIL_TIMER":
+          return {
+            ...prevState,
+            refreshMailTimer: action.refreshMailTimer,
+          };
         default:
       }
     },
     {
+      isLanding: !JSON.parse(sessionStorage.getItem("isNotLanding")),
       isMailLoading: true,
       wallet: JSON.parse(sessionStorage.getItem("wallet")),
-      walletAddress: JSON.parse(sessionStorage.getItem("walletAddress")),
+      walletAddress: sessionStorage.getItem("walletAddress"),
+      userName: sessionStorage.getItem("userName"),
       openComposeMail: false,
       allMail: [],
       backupMails: [],
       starredMails: [],
+      sentMails: [],
+      draftMails: JSON.parse(sessionStorage.getItem("draftMails"))
+        ? JSON.parse(sessionStorage.getItem("draftMails"))
+        : [],
       selectedMail: null,
       selectedMenu: "inbox",
       firstTimeLoader: false,
@@ -116,34 +150,61 @@ export const AppProvider = (props) => {
         current: 1,
         count: 10,
       },
+      refreshMailTimer: null,
+      selectedDraft: {
+        to: "",
+        subject: "",
+        body: [
+          {
+            type: "paragraph",
+            children: [{ text: "" }],
+          },
+        ],
+        attachments: [],
+        tx_qty: "",
+        unixTime: Math.round(new Date().getTime() / 1000),
+        isDraft: true,
+      },
     }
   );
 
   const actionContext = useMemo(
     () => ({
-      signIn: (pData) => {
+      signIn: async (pData) => {
+        pData.userName = await ArweaveService.getName(pData.walletAddress);
         sessionStorage.setItem(
           "wallet",
           JSON.stringify(pData.walletPrivateKey)
         );
-        sessionStorage.setItem(
-          "walletAddress",
-          JSON.stringify(pData.walletAddress)
-        );
+        sessionStorage.setItem("walletAddress", pData.walletAddress);
+        sessionStorage.setItem("userName", pData.userName);
         dispatch({ type: "SIGN_IN", wallet: pData });
       },
-      signOut: () => {
+      signOut: (refreshMailTimer) => {
         sessionStorage.removeItem("wallet");
         sessionStorage.removeItem("walletAddress");
+        sessionStorage.removeItem("userName");
+        sessionStorage.removeItem("isNotLanding");
+        clearInterval(refreshMailTimer);
         dispatch({ type: "SIGN_OUT" });
+        dispatch({ type: "TOGGLE_LANDING", isLanding: true });
         dispatch({ type: "SET_FIRST_TIME", firstTime: true });
       },
       restoreWallet: () => {
         const data = {
           walletPrivateKey: JSON.parse(sessionStorage.getItem("wallet")),
-          walletAddress: JSON.parse(sessionStorage.getItem("walletAddress")),
+          walletAddress: sessionStorage.getItem("walletAddress"),
+          userName: sessionStorage.getItem("userName"),
         };
         dispatch({ type: "RESTORE_TOKEN", wallet: data });
+      },
+      toggleLandingPage: (landingPage) => {
+        if (landingPage) {
+          sessionStorage.setItem("isNotLanding", JSON.stringify(landingPage));
+        } else {
+          sessionStorage.removeItem("isNotLanding");
+        }
+        dispatch({ type: "TOGGLE_LANDING", isLanding: !landingPage });
       },
       toggleComposeMail: (pFlag) => {
         dispatch({ type: "TOGGLE_COMPOSE_MAIL", open: pFlag });
@@ -169,11 +230,15 @@ export const AppProvider = (props) => {
           mails: { allMail: finalMails, backupMails: allMail },
         });
         const starredMailIds = await ArweaveService.getStarredMails(
-          JSON.parse(sessionStorage.getItem("walletAddress"))
+          sessionStorage.getItem("walletAddress")
         );
         const starredMails = allMail.filter((mail) =>
           starredMailIds.map((star) => star.mailTxId).includes(mail.id)
         );
+        const sentMails = await ArweaveService.refreshOutbox(
+          sessionStorage.getItem("walletAddress")
+        );
+        dispatch({ type: "SET_SENT_MAIL", sentMails });
         dispatch({ type: "SET_STARRED_MAIL", starredMails });
         lastSyncTime = moment().toString();
         dispatch({ type: "SET_LAST_SYNC_TIME", lastSyncTime });
@@ -189,6 +254,15 @@ export const AppProvider = (props) => {
       },
       setFirstTime: async (firstTime) => {
         dispatch({ type: "SET_FIRST_TIME", firstTime });
+      },
+      setDraftMails: async (draftMails) => {
+        dispatch({ type: "SET_DRAFT_MAIL", draftMails });
+      },
+      setSelectedDraftMails: async (selectedDraft) => {
+        dispatch({ type: "SET_SELECTED_DRAFT_MAIL", selectedDraft });
+      },
+      setRefreshMailTimer: async (refreshMailTimer) => {
+        dispatch({ type: "SET_REFRESH_MAIL_TIMER", refreshMailTimer });
       },
       selectMenu: async (menu) => {
         dispatch({ type: "MAIL_SELECTED", mail: null });
@@ -237,6 +311,7 @@ export const AppProvider = (props) => {
         dispatch({ type: "SET_PAGINATION_CONFIG", paginationConfig });
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
   return (

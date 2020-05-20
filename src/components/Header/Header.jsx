@@ -13,10 +13,10 @@ import { shortenAddress } from "../../utils";
 
 function Header() {
   const { signOut, searchMails } = React.useContext(ActionContext);
-  const { walletAddress, backupMails } = React.useContext(StateContext);
+  const { walletAddress, backupMails, userName, refreshMailTimer } = React.useContext(StateContext);
   const [showDropdown, setShowDropdown] = React.useState(false);
   const logout = () => {
-    signOut();
+    signOut(refreshMailTimer);
   };
   const copyWalletAddress = () => {
     copy(walletAddress);
@@ -30,7 +30,7 @@ function Header() {
   return (
     <div className="header">
       <div className="logo-container">
-        <h3 className="logo-name">Weavy</h3>
+        <h3 className="logo-name">weavy.</h3>
       </div>
       <div className="search-bar-container">
         <div className="search-bar">
@@ -72,7 +72,7 @@ function Header() {
           </div>
           <div className="wallet-address-container" onClick={copyWalletAddress}>
             <div className="dropdown-title">
-              {shortenAddress(walletAddress)}
+              {shortenAddress(userName)}
             </div>
             <div className="wallet-address-copy">
               <FontAwesomeIcon icon={faCopy} />
