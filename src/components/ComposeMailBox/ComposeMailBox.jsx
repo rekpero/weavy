@@ -81,6 +81,7 @@ function ComposeMailBox() {
     setSubject("");
     setTokens("");
     setContent("");
+    setAttachments([]);
     toggleComposeMail(false);
   };
 
@@ -165,6 +166,7 @@ function ComposeMailBox() {
         setSubject("");
         setTokens("");
         setContent("");
+        setAttachments([]);
         toggleComposeMail(false);
         setNotification(res.msg);
       }
@@ -177,7 +179,7 @@ function ComposeMailBox() {
     try {
       return (
         <img
-          src={require(`../../assets/icons/${fileType}.svg`)}
+          src={`https://res.cloudinary.com/mmitrasish/image/upload/v1590010665/weavy/${fileType}.png`}
           alt="file-icon"
           className="file-type-icon"
         />
@@ -185,6 +187,11 @@ function ComposeMailBox() {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const removeAttachment = (id) => {
+    const finalAttachments = attachments.filter((attachment, i) => id !== i);
+    setAttachments(finalAttachments);
   };
 
   return (
@@ -265,7 +272,10 @@ function ComposeMailBox() {
                         {parseFileSize(attachment.size)}
                       </div>
                     </div>
-                    <div className="mail-trash">
+                    <div
+                      className="mail-trash"
+                      onClick={(e) => removeAttachment(i)}
+                    >
                       <FontAwesomeIcon icon={faTrash} />
                     </div>
                   </div>

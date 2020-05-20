@@ -12,7 +12,8 @@ import {
   faStar as faSolidStar,
   faEdit,
   faPaperPlane,
-  faLink
+  faLink,
+  faCloudDownloadAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import MailEditor from "../MailEditor";
 import ReadonlyEditor from "../ReadonlyEditor";
@@ -41,13 +42,14 @@ function ViewMail() {
   const [showForward, setShowForward] = React.useState(false);
   const [recipient, setRecipient] = React.useState("");
   const [tokens, setTokens] = React.useState("");
-  const [attachments, setAttachments] = React.useState([])
+  const [attachments, setAttachments] = React.useState([]);
   const [content, setContent] = React.useState([
     {
       type: "paragraph",
       children: [{ text: "" }],
     },
   ]);
+
   const sendReply = async () => {
     setNotification("Sending reply...");
     const recipient = selectedMail.from_address;
@@ -69,8 +71,8 @@ function ViewMail() {
     }
     const stringifySubject = JSON.stringify({
       subject,
-      attachments
-    })
+      attachments,
+    });
     const finalContent = await CryptoService.encrypt_mail(
       stringifyContent,
       stringifySubject,
@@ -108,8 +110,8 @@ function ViewMail() {
     }
     const stringifySubject = JSON.stringify({
       subject,
-      attachments
-    })
+      attachments,
+    });
     const finalContent = await CryptoService.encrypt_mail(
       stringifyContent,
       stringifySubject,
@@ -149,8 +151,8 @@ function ViewMail() {
       }
       const stringifySubject = JSON.stringify({
         subject: selectedMail.subject,
-        attachments
-      })
+        attachments,
+      });
       const finalContent = await CryptoService.encrypt_mail(
         stringifyContent,
         stringifySubject,
@@ -192,6 +194,7 @@ function ViewMail() {
   const openForward = () => {
     setTokens(Number.parseFloat(selectedMail.tx_qty).toFixed(2) + "");
     setContent(selectedMail.body);
+    setShowReply(false);
     setShowForward(true);
   };
 
@@ -232,27 +235,35 @@ function ViewMail() {
   const getFileTypeIcon = (fileType) => {
     try {
       return (
-        <img src={require(`../../assets/icons/${fileType}.svg`)} alt="file-icon" className="file-type-icon" />
-      )
+        <img
+          src={`https://res.cloudinary.com/mmitrasish/image/upload/v1590010665/weavy/${fileType}.png`}
+          alt="file-icon"
+          className="file-type-icon"
+        />
+      );
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
+
+  const removeAttachment = (id) => {
+    const finalAttachments = attachments.filter((attachment, i) => id !== i);
+    setAttachments(finalAttachments);
+  };
 
   const attachFile = (e) => {
-    setNotification("File attaching...")
+    setNotification("File attaching...");
     const file = e.target.files[0];
-    let reader = new window.FileReader()
-    reader.readAsArrayBuffer(file)
-    reader.onloadend = () => convertToBuffer(reader, file)
-
-  }
+    let reader = new window.FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onloadend = () => convertToBuffer(reader, file);
+  };
   const convertToBuffer = async (reader, file) => {
     const buffer = await Buffer.from(reader.result);
     const hash = await IPFSService.uploadAttachment(buffer);
     const randomID = (Math.random() * 1e32).toString(36).substring(0, 10);
     const attachmentUnixTime = Math.round(new Date().getTime() / 1000);
-    const lastDot = file.name.lastIndexOf('.');
+    const lastDot = file.name.lastIndexOf(".");
     const ext = file.name.substring(lastDot + 1);
     const attachment = {
       id: randomID,
@@ -260,10 +271,10 @@ function ViewMail() {
       timestamp: attachmentUnixTime,
       type: ext,
       size: file.size,
-      hash
-    }
-    setAttachments([...attachments, attachment])
-    setNotification("File attached.")
+      hash,
+    };
+    setAttachments([...attachments, attachment]);
+    setNotification("File attached.");
   };
 
   const checkEmptyContent = (content) => {
@@ -278,7 +289,14 @@ function ViewMail() {
   };
 
   const saveAndClose = () => {
-    if (showReply ? selectedMail.from : recipient || selectedMail.subject || !checkEmptyContent(content) || tokens) {
+    if (
+      showReply
+        ? selectedMail.from
+        : recipient ||
+          selectedMail.subject ||
+          !checkEmptyContent(content) ||
+          tokens
+    ) {
       setNotification("Saving mail as draft...");
       const randomID = (Math.random() * 1e32).toString(36).substring(0, 10);
       let mailItem = {
@@ -354,14 +372,14 @@ function ViewMail() {
                 className="user-profile-blockie-icon"
               />
             ) : (
-                selectedMail.to && (
-                  <img
-                    src={makeBlockie(selectedMail.to)}
-                    alt="address-blockie"
-                    className="user-profile-blockie-icon"
-                  />
-                )
-              )}
+              selectedMail.to && (
+                <img
+                  src={makeBlockie(selectedMail.to)}
+                  alt="address-blockie"
+                  className="user-profile-blockie-icon"
+                />
+              )
+            )}
           </div>
           <div className="view-mail-body-content-container">
             <div className="view-mail-body-content-header">
@@ -370,8 +388,8 @@ function ViewMail() {
                   {!selectedMail.isDraft
                     ? shortenAddress(selectedMail.from)
                     : selectedMail.to
-                      ? shortenAddress(selectedMail.to)
-                      : "Draft"}
+                    ? shortenAddress(selectedMail.to)
+                    : "Draft"}
                 </span>
                 <span className="view-mail-body-content-user-wallet">
                   <span className="view-mail-body-content-wallet-icon">
@@ -405,36 +423,51 @@ function ViewMail() {
             <div className="view-mail-body-content">
               <ReadonlyEditor content={selectedMail.body}></ReadonlyEditor>
             </div>
-            {selectedMail.attachments.length ? <div className="compose-body-attachments-container">
-              <div className="compose-body-attachments-header-container">
-                <span className="compose-body-attachments-icon">
-                  <FontAwesomeIcon icon={faLink} />
-                </span>
-                <span>{selectedMail.attachments.length} Attachments</span>
+            {selectedMail.attachments.length ? (
+              <div className="compose-body-attachments-container">
+                <div className="compose-body-attachments-header-container">
+                  <span className="compose-body-attachments-icon">
+                    <FontAwesomeIcon icon={faLink} />
+                  </span>
+                  <span>{selectedMail.attachments.length} Attachments</span>
+                </div>
+                <div className="compose-body-attachments-body">
+                  {selectedMail.attachments.map((attachment, i) => (
+                    <div key={i} className="attachments-item">
+                      <div className="attachments-item-icon-container">
+                        {getFileTypeIcon(attachment.type)}
+                      </div>
+                      <div className="attachments-item-details-container">
+                        <div className="attachments-item-name">
+                          {attachment.name}
+                        </div>
+                        <div className="attachments-item-size">
+                          {parseFileSize(attachment.size)}
+                        </div>
+                      </div>
+                      <a
+                        href={`https://ipfs.io/ipfs/${attachment.hash}`}
+                        className="mail-trash"
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FontAwesomeIcon icon={faCloudDownloadAlt} />
+                      </a>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="compose-body-attachments-body">
-                {selectedMail.attachments.map((attachment, i) => (
-                  <div key={i} className="attachments-item">
-                    <div className="attachments-item-icon-container">
-                      {getFileTypeIcon(attachment.type)}
-                    </div>
-                    <div className="attachments-item-details-container">
-                      <div className="attachments-item-name">{attachment.name}</div>
-                      <div className="attachments-item-size">{parseFileSize(attachment.size)}</div>
-                    </div>
-                    <div className="mail-trash">
-                      <FontAwesomeIcon icon={faTrash} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div> : null}
+            ) : null}
             <div className="view-mail-body-action-container">
               {!selectedMail.isDraft ? (
                 <div className="draft-action-button-container">
                   <div
                     className="view-mail-body-action-button"
-                    onClick={(e) => setShowReply(true)}
+                    onClick={(e) => {
+                      setShowReply(true);
+                      setShowForward(false);
+                    }}
                   >
                     <span className="view-mail-body-action-icon">
                       <FontAwesomeIcon icon={faReply} />
@@ -452,37 +485,37 @@ function ViewMail() {
                   </div>
                 </div>
               ) : (
-                  <>
-                    <div className="draft-action-button-container">
-                      <div
-                        className="view-mail-body-action-button"
-                        onClick={sendMail}
-                      >
-                        <span className="view-mail-body-action-icon">
-                          <FontAwesomeIcon icon={faPaperPlane} />
-                        </span>
-                        <span>Send</span>
-                      </div>
-                      <div
-                        className="view-mail-body-action-button"
-                        onClick={openEditMail}
-                      >
-                        <span className="view-mail-body-action-icon">
-                          <FontAwesomeIcon icon={faEdit} />
-                        </span>
-                        <span>Edit</span>
-                      </div>
-                    </div>
-                    <div className="draft-action-delete-container">
-                      <span
-                        className="view-mail-body-content-trash"
-                        onClick={deleteDraftMail}
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
+                <>
+                  <div className="draft-action-button-container">
+                    <div
+                      className="view-mail-body-action-button"
+                      onClick={sendMail}
+                    >
+                      <span className="view-mail-body-action-icon">
+                        <FontAwesomeIcon icon={faPaperPlane} />
                       </span>
+                      <span>Send</span>
                     </div>
-                  </>
-                )}
+                    <div
+                      className="view-mail-body-action-button"
+                      onClick={openEditMail}
+                    >
+                      <span className="view-mail-body-action-icon">
+                        <FontAwesomeIcon icon={faEdit} />
+                      </span>
+                      <span>Edit</span>
+                    </div>
+                  </div>
+                  <div className="draft-action-delete-container">
+                    <span
+                      className="view-mail-body-content-trash"
+                      onClick={deleteDraftMail}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -524,30 +557,39 @@ function ViewMail() {
                   content={content}
                 />
               </div>
-              {attachments.length ? <div className="compose-body-attachments-container">
-                <div className="compose-body-attachments-header-container">
-                  <span className="compose-body-attachments-icon">
-                    <FontAwesomeIcon icon={faLink} />
-                  </span>
-                  <span>{attachments.length} Attachments</span>
+              {attachments.length ? (
+                <div className="compose-body-attachments-container">
+                  <div className="compose-body-attachments-header-container">
+                    <span className="compose-body-attachments-icon">
+                      <FontAwesomeIcon icon={faLink} />
+                    </span>
+                    <span>{attachments.length} Attachments</span>
+                  </div>
+                  <div className="compose-body-attachments-body">
+                    {attachments.map((attachment, i) => (
+                      <div key={i} className="attachments-item">
+                        <div className="attachments-item-icon-container">
+                          {getFileTypeIcon(attachment.type)}
+                        </div>
+                        <div className="attachments-item-details-container">
+                          <div className="attachments-item-name">
+                            {attachment.name}
+                          </div>
+                          <div className="attachments-item-size">
+                            {parseFileSize(attachment.size)}
+                          </div>
+                        </div>
+                        <div
+                          className="mail-trash"
+                          onClick={(e) => removeAttachment(i)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="compose-body-attachments-body">
-                  {attachments.map((attachment, i) => (
-                    <div key={i} className="attachments-item">
-                      <div className="attachments-item-icon-container">
-                        {getFileTypeIcon(attachment.type)}
-                      </div>
-                      <div className="attachments-item-details-container">
-                        <div className="attachments-item-name">{attachment.name}</div>
-                        <div className="attachments-item-size">{parseFileSize(attachment.size)}</div>
-                      </div>
-                      <div className="mail-trash">
-                        <FontAwesomeIcon icon={faTrash} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div> : null}
+              ) : null}
               <div className="compose-body-buttons-container">
                 <div className="send-button-container">
                   <button
@@ -559,7 +601,11 @@ function ViewMail() {
                   </button>
                   <span className="mail-link">
                     <FontAwesomeIcon icon={faLink} />
-                    <input type="file" className="mail-link-input" onChange={attachFile} />
+                    <input
+                      type="file"
+                      className="mail-link-input"
+                      onChange={attachFile}
+                    />
                   </span>
                   <span
                     className="reply-mail-trash"
@@ -618,30 +664,39 @@ function ViewMail() {
                   content={content}
                 />
               </div>
-              {attachments.length ? <div className="compose-body-attachments-container">
-                <div className="compose-body-attachments-header-container">
-                  <span className="compose-body-attachments-icon">
-                    <FontAwesomeIcon icon={faLink} />
-                  </span>
-                  <span>{attachments.length} Attachments</span>
+              {attachments.length ? (
+                <div className="compose-body-attachments-container">
+                  <div className="compose-body-attachments-header-container">
+                    <span className="compose-body-attachments-icon">
+                      <FontAwesomeIcon icon={faLink} />
+                    </span>
+                    <span>{attachments.length} Attachments</span>
+                  </div>
+                  <div className="compose-body-attachments-body">
+                    {attachments.map((attachment, i) => (
+                      <div key={i} className="attachments-item">
+                        <div className="attachments-item-icon-container">
+                          {getFileTypeIcon(attachment.type)}
+                        </div>
+                        <div className="attachments-item-details-container">
+                          <div className="attachments-item-name">
+                            {attachment.name}
+                          </div>
+                          <div className="attachments-item-size">
+                            {parseFileSize(attachment.size)}
+                          </div>
+                        </div>
+                        <div
+                          className="mail-trash"
+                          onClick={(e) => removeAttachment(i)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="compose-body-attachments-body">
-                  {attachments.map((attachment, i) => (
-                    <div key={i} className="attachments-item">
-                      <div className="attachments-item-icon-container">
-                        {getFileTypeIcon(attachment.type)}
-                      </div>
-                      <div className="attachments-item-details-container">
-                        <div className="attachments-item-name">{attachment.name}</div>
-                        <div className="attachments-item-size">{parseFileSize(attachment.size)}</div>
-                      </div>
-                      <div className="mail-trash">
-                        <FontAwesomeIcon icon={faTrash} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div> : null}
+              ) : null}
               <div className="compose-body-buttons-container">
                 <div className="send-button-container">
                   <button
@@ -653,7 +708,11 @@ function ViewMail() {
                   </button>
                   <span className="mail-link">
                     <FontAwesomeIcon icon={faLink} />
-                    <input type="file" className="mail-link-input" onChange={attachFile} />
+                    <input
+                      type="file"
+                      className="mail-link-input"
+                      onChange={attachFile}
+                    />
                   </span>
                   <span
                     className="reply-mail-trash"
