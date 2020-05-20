@@ -232,6 +232,18 @@
         }
       }
 
+      .mail-tx-container {
+        width: 100%;
+        display: flex;
+        .mail-tx-id {
+          color: var(--themeColorDark);
+          text-decoration: none;
+          border-bottom: 1px dotted var(--themeColorDark);
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
       .mail-subject {
         font-size: 17px;
         font-weight: 500;
@@ -274,6 +286,8 @@ $information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
 @media #{$information-phone} {
   .mailbox-content {
     flex-direction: row;
+    height: auto !important;
+    border-bottom: 1px solid #c7c7c791;
     .mail-item {
       border-right: 1px solid #c7c7c791;
       font-size: 12px;
@@ -302,6 +316,8 @@ $information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
 @media #{$information-pad} {
   .mailbox-content {
     flex-direction: row;
+    height: auto !important;
+    border-bottom: 1px solid #c7c7c791;
     .mail-item {
       border-right: 1px solid #c7c7c791;
       font-size: 14px;

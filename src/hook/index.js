@@ -71,6 +71,11 @@ export const AppProvider = (props) => {
             ...prevState,
             draftMails: action.draftMails,
           };
+        case "SET_SENT_MAIL":
+          return {
+            ...prevState,
+            sentMails: action.sentMails,
+          };
         case "SET_FIRST_TIME_LOADER":
           return {
             ...prevState,
@@ -123,6 +128,7 @@ export const AppProvider = (props) => {
       allMail: [],
       backupMails: [],
       starredMails: [],
+      sentMails: [],
       draftMails: JSON.parse(sessionStorage.getItem("draftMails"))
         ? JSON.parse(sessionStorage.getItem("draftMails"))
         : [],
@@ -221,6 +227,11 @@ export const AppProvider = (props) => {
         const starredMails = allMail.filter((mail) =>
           starredMailIds.map((star) => star.mailTxId).includes(mail.id)
         );
+        const sentMails = await ArweaveService.refreshOutbox(
+          sessionStorage.getItem("walletAddress")
+        );
+        console.log(sentMails)
+        dispatch({ type: "SET_SENT_MAIL", sentMails });
         dispatch({ type: "SET_STARRED_MAIL", starredMails });
         lastSyncTime = moment().toString();
         dispatch({ type: "SET_LAST_SYNC_TIME", lastSyncTime });

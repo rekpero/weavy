@@ -73,9 +73,7 @@
               margin-left: 1em;
               .view-mail-body-content-wallet-icon {
                 margin-right: 0.5em;
-              }
-
-              
+              }              
             }
           }
           .view-mail-body-content-user-reply {
@@ -133,6 +131,19 @@
               background-color: var(--hoverBackground);
             }
           }
+
+          .reply-mail-close {
+            height: 36px;
+            width: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            &:hover {
+              background-color: var(--hoverBackground);
+            }
+          }
         }
         .reply-body-amount {
           display: flex;
@@ -182,6 +193,7 @@
           padding: 12px 0px 0px 0px;
           display: flex;
           align-items: center;
+          position: relative;
           .send-button-container {
             flex-grow: 1;
             justify-content: space-between;
@@ -197,6 +209,33 @@
               cursor: pointer;
               &:hover {
                 background-color: var(--hoverBackground);
+              }
+            }
+            .mail-link {
+              height: 36px;
+              width: 36px;
+              position: absolute;
+              align-items: center;
+              display: flex;
+              justify-content: center;
+              border-radius: 50%;
+              top: 10px;
+              left: 116px;
+              cursor: pointer;
+              color: var(--labelColor);
+              &:hover {
+                background-color: var(--hoverBackground);
+              }
+    
+              .mail-link-input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                z-index: 100;
+                cursor: pointer;
               }
             }
             .send-mail-button {
@@ -217,6 +256,7 @@
         }
 
         .compose-body-attachments-container {
+          margin-top: 12px;
           .compose-body-attachments-header-container {
             font-size: 18px;
             margin: 4px 0px;

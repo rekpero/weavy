@@ -18,7 +18,7 @@ import MailEditor from "../MailEditor";
 import ReadonlyEditor from "../ReadonlyEditor";
 import { StateContext, ActionContext } from "../../hook";
 import { shortenAddress } from "../../utils";
-import { ArweaveService, CryptoService } from "../../services";
+import { ArweaveService, CryptoService, IPFSService } from "../../services";
 import { parseFileSize } from "../../utils";
 import moment from "moment";
 
@@ -41,6 +41,7 @@ function ViewMail() {
   const [showForward, setShowForward] = React.useState(false);
   const [recipient, setRecipient] = React.useState("");
   const [tokens, setTokens] = React.useState("");
+  const [attachments, setAttachments] = React.useState([])
   const [content, setContent] = React.useState([
     {
       type: "paragraph",
@@ -50,7 +51,7 @@ function ViewMail() {
   const sendReply = async () => {
     setNotification("Sending reply...");
     const recipient = selectedMail.from_address;
-    const subject = selectedMail.subject;
+    const subject = "Re: " + selectedMail.subject;
     const stringifyContent = JSON.stringify(content);
     var mailTagUnixTime = Math.round(new Date().getTime() / 1000);
     let finalTokens = "";
@@ -66,9 +67,13 @@ function ViewMail() {
       alert("Recipient has to send a transaction to the network, first!");
       return;
     }
+    const stringifySubject = JSON.stringify({
+      subject,
+      attachments
+    })
     const finalContent = await CryptoService.encrypt_mail(
       stringifyContent,
-      subject,
+      stringifySubject,
       pub_key
     );
     await ArweaveService.sendMail(
@@ -101,9 +106,13 @@ function ViewMail() {
       alert("Recipient has to send a transaction to the network, first!");
       return;
     }
+    const stringifySubject = JSON.stringify({
+      subject,
+      attachments
+    })
     const finalContent = await CryptoService.encrypt_mail(
       stringifyContent,
-      subject,
+      stringifySubject,
       pub_key
     );
     await ArweaveService.sendMail(
@@ -138,9 +147,13 @@ function ViewMail() {
         alert("Recipient has to send a transaction to the network, first!");
         return;
       }
+      const stringifySubject = JSON.stringify({
+        subject: selectedMail.subject,
+        attachments
+      })
       const finalContent = await CryptoService.encrypt_mail(
         stringifyContent,
-        selectedMail.subject,
+        stringifySubject,
         pub_key
       );
       await ArweaveService.sendMail(
@@ -226,6 +239,75 @@ function ViewMail() {
     }
   }
 
+  const attachFile = (e) => {
+    setNotification("File attaching...")
+    const file = e.target.files[0];
+    let reader = new window.FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onloadend = () => convertToBuffer(reader, file)
+
+  }
+  const convertToBuffer = async (reader, file) => {
+    const buffer = await Buffer.from(reader.result);
+    const hash = await IPFSService.uploadAttachment(buffer);
+    const randomID = (Math.random() * 1e32).toString(36).substring(0, 10);
+    const attachmentUnixTime = Math.round(new Date().getTime() / 1000);
+    const lastDot = file.name.lastIndexOf('.');
+    const ext = file.name.substring(lastDot + 1);
+    const attachment = {
+      id: randomID,
+      name: file.name,
+      timestamp: attachmentUnixTime,
+      type: ext,
+      size: file.size,
+      hash
+    }
+    setAttachments([...attachments, attachment])
+    setNotification("File attached.")
+  };
+
+  const checkEmptyContent = (content) => {
+    if (
+      content.length === 1 &&
+      content[0].children.length === 1 &&
+      content[0].children[0].text === ""
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  const saveAndClose = () => {
+    if (showReply ? selectedMail.from : recipient || selectedMail.subject || !checkEmptyContent(content) || tokens) {
+      setNotification("Saving mail as draft...");
+      const randomID = (Math.random() * 1e32).toString(36).substring(0, 10);
+      let mailItem = {
+        id: randomID,
+        to: recipient,
+        subject: (showReply ? "Re: " : "") + selectedMail.subject,
+        body: content,
+        tx_qty: tokens === "" ? "0" : tokens,
+        attachments,
+        unixTime: Math.round(new Date().getTime() / 1000),
+        isDraft: true,
+      };
+
+      let sessionDrafts = sessionStorage.getItem("draftMails");
+      let drafts;
+
+      if (sessionDrafts !== null) {
+        drafts = JSON.parse(sessionDrafts);
+      } else {
+        drafts = [];
+      }
+      sessionStorage.setItem(
+        "draftMails",
+        JSON.stringify([...drafts, mailItem])
+      );
+      setDraftMails([...drafts, mailItem]);
+    }
+    showReply ? setShowReply(false) : setShowForward(false);
+  };
 
   return (
     <div className="view-mail">
@@ -303,9 +385,6 @@ function ViewMail() {
               <span className="view-mail-body-content-time">
                 {moment.unix(selectedMail.unixTime).fromNow()}
               </span>
-              {/* <span className="view-mail-body-content-trash">
-                <FontAwesomeIcon icon={faTrash} />
-              </span> */}
               {!selectedMail.isDraft && (
                 <span
                   className="view-mail-body-content-star"
@@ -331,7 +410,7 @@ function ViewMail() {
                 <span className="compose-body-attachments-icon">
                   <FontAwesomeIcon icon={faLink} />
                 </span>
-                <span>6 Attachments</span>
+                <span>{selectedMail.attachments.length} Attachments</span>
               </div>
               <div className="compose-body-attachments-body">
                 {selectedMail.attachments.map((attachment, i) => (
@@ -424,6 +503,12 @@ function ViewMail() {
                 <div className="view-mail-body-content-user-reply">
                   {selectedMail.from}
                 </div>
+                <span
+                  className="reply-mail-close"
+                  onClick={(e) => saveAndClose()}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </span>
               </div>
               <div className="reply-body-amount">
                 <input
@@ -439,6 +524,30 @@ function ViewMail() {
                   content={content}
                 />
               </div>
+              {attachments.length ? <div className="compose-body-attachments-container">
+                <div className="compose-body-attachments-header-container">
+                  <span className="compose-body-attachments-icon">
+                    <FontAwesomeIcon icon={faLink} />
+                  </span>
+                  <span>{attachments.length} Attachments</span>
+                </div>
+                <div className="compose-body-attachments-body">
+                  {attachments.map((attachment, i) => (
+                    <div key={i} className="attachments-item">
+                      <div className="attachments-item-icon-container">
+                        {getFileTypeIcon(attachment.type)}
+                      </div>
+                      <div className="attachments-item-details-container">
+                        <div className="attachments-item-name">{attachment.name}</div>
+                        <div className="attachments-item-size">{parseFileSize(attachment.size)}</div>
+                      </div>
+                      <div className="mail-trash">
+                        <FontAwesomeIcon icon={faTrash} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div> : null}
               <div className="compose-body-buttons-container">
                 <div className="send-button-container">
                   <button
@@ -448,6 +557,10 @@ function ViewMail() {
                   >
                     Send
                   </button>
+                  <span className="mail-link">
+                    <FontAwesomeIcon icon={faLink} />
+                    <input type="file" className="mail-link-input" onChange={attachFile} />
+                  </span>
                   <span
                     className="reply-mail-trash"
                     onClick={(e) => setShowReply(false)}
@@ -483,6 +596,12 @@ function ViewMail() {
                     onChange={(e) => setRecipient(e.target.value)}
                   />
                 </div>
+                <span
+                  className="reply-mail-close"
+                  onClick={(e) => saveAndClose()}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </span>
               </div>
               <div className="reply-body-amount">
                 <input
@@ -499,6 +618,30 @@ function ViewMail() {
                   content={content}
                 />
               </div>
+              {attachments.length ? <div className="compose-body-attachments-container">
+                <div className="compose-body-attachments-header-container">
+                  <span className="compose-body-attachments-icon">
+                    <FontAwesomeIcon icon={faLink} />
+                  </span>
+                  <span>{attachments.length} Attachments</span>
+                </div>
+                <div className="compose-body-attachments-body">
+                  {attachments.map((attachment, i) => (
+                    <div key={i} className="attachments-item">
+                      <div className="attachments-item-icon-container">
+                        {getFileTypeIcon(attachment.type)}
+                      </div>
+                      <div className="attachments-item-details-container">
+                        <div className="attachments-item-name">{attachment.name}</div>
+                        <div className="attachments-item-size">{parseFileSize(attachment.size)}</div>
+                      </div>
+                      <div className="mail-trash">
+                        <FontAwesomeIcon icon={faTrash} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div> : null}
               <div className="compose-body-buttons-container">
                 <div className="send-button-container">
                   <button
@@ -508,6 +651,10 @@ function ViewMail() {
                   >
                     Send
                   </button>
+                  <span className="mail-link">
+                    <FontAwesomeIcon icon={faLink} />
+                    <input type="file" className="mail-link-input" onChange={attachFile} />
+                  </span>
                   <span
                     className="reply-mail-trash"
                     onClick={(e) => setShowForward(false)}

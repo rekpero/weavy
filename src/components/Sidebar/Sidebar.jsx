@@ -1,7 +1,7 @@
 import React from "react";
 import "./Sidebar.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInbox, faStar, faFile } from "@fortawesome/free-solid-svg-icons";
+import { faInbox, faStar, faFile, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { ActionContext, StateContext } from "../../hook";
 
 function Sidebar() {
@@ -32,17 +32,6 @@ function Sidebar() {
         </span>
         {/* <span className="sidebar-item-number">1</span> */}
       </div>
-      {/* <div
-        className={`sidebar-item ${selectedMenu === "sent" ? "selected" : ""}`}
-      >
-        <span className="sidebar-item-main">
-          <span>
-            <FontAwesomeIcon icon={faPaperPlane}></FontAwesomeIcon>
-          </span>
-          <span className="sidebar-item-title">Sent</span>
-        </span>
-        <span className="sidebar-item-number">1</span>
-      </div> */}
       <div
         className={`sidebar-item ${
           selectedMenu === "starred" ? "selected" : ""
@@ -57,6 +46,18 @@ function Sidebar() {
             ></FontAwesomeIcon>
           </span>
           <span className="sidebar-item-title">Starred</span>
+        </span>
+        {/* <span className="sidebar-item-number">1</span> */}
+      </div>
+      <div
+        className={`sidebar-item ${selectedMenu === "sent" ? "selected" : ""}`}
+        onClick={(e) => selectMenu("sent")}
+      >
+        <span className="sidebar-item-main">
+          <span>
+            <FontAwesomeIcon className="sidebar-item-icon" icon={faPaperPlane}></FontAwesomeIcon>
+          </span>
+          <span className="sidebar-item-title">Sent</span>
         </span>
         {/* <span className="sidebar-item-number">1</span> */}
       </div>

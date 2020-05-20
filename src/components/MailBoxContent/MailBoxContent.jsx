@@ -23,6 +23,7 @@ function MailBoxContent() {
     draftMails,
     wallet,
     walletAddress,
+    sentMails
   } = React.useContext(StateContext);
   const { selectMail, setNotification } = React.useContext(ActionContext);
 
@@ -257,6 +258,60 @@ function MailBoxContent() {
               ></FontAwesomeIcon>
             </div>
             <div>No Draft Mail Found</div>
+          </div>
+        )}
+      {selectedMenu === "sent" &&
+        sentMails.length ? sentMails.map((mail, id) => (
+          <div
+            className={`mail-item`}
+            key={id}
+          >
+            {/* <div className="select-mail-container">
+              <input type="checkbox" className="filled" />
+            </div> */}
+            <div className="user-profile-icon-container">
+              {mail.to && (
+                <img
+                  src={makeBlockie(mail.to)}
+                  alt="address-blockie"
+                  className="user-profile-blockie-icon"
+                />
+              )}
+            </div>
+            <div className="mail-content-container">
+              <div className="mail-user-container">
+                <span className="mail-user-name-container">
+                  <span className="mail-user-name">
+                    {mail.to ? shortenAddress(mail.to) : "Draft"}
+                  </span>
+                  <span>
+                    <span className="mail-user-wallet">
+                      <FontAwesomeIcon icon={faWallet} />
+                    </span>
+                    <span className="mail-user-wallet-amount">
+                      {Number.parseFloat(
+                        mail.tx_qty === "" ? 0 : mail.tx_qty
+                      ).toFixed(2)}{" "}
+                    AR
+                  </span>
+                  </span>
+                </span>
+                <span className="mail-time">
+                  {moment.unix(mail.unixTime).fromNow()}
+                </span>
+              </div>
+              <div className="mail-tx-container"><a className="mail-tx-id" href={`https://viewblock.io/arweave/tx/${mail.id}`} target="_blank" rel="noopener noreferrer">{mail.id}</a></div>
+            </div>
+          </div>
+        )) : selectedMenu === "sent" && (
+          <div className="no-mail-container">
+            <div>
+              <FontAwesomeIcon
+                className="no-mail-icon"
+                icon={faInbox}
+              ></FontAwesomeIcon>
+            </div>
+            <div>No Sent Mail Found</div>
           </div>
         )}
     </div>

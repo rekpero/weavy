@@ -166,6 +166,63 @@ export default class ArweaveService {
     return tx_rows;
   };
 
+  static refreshOutbox = async (walletAddress) => {
+
+    let get_mail_query = {
+      op: "and",
+      expr1: {
+        op: "equals",
+        expr1: "from",
+        expr2: walletAddress,
+      },
+      expr2: {
+        op: "and",
+        expr1: {
+          op: "equals",
+          expr1: "App-Name",
+          expr2: APP_NAME,
+        },
+        expr2: {
+          op: "equals",
+          expr1: "App-Version",
+          expr2: APP_VERSION,
+        },
+      },
+    };
+
+    const res = await arweave.api.post(`arql`, get_mail_query);
+
+    var tx_rows = [];
+    if (res.data === "") {
+      tx_rows = [];
+    } else {
+      tx_rows = await Promise.all(
+        res.data.map(async (id, i) => {
+          let tx_row = {};
+          let tx = await arweave.transactions.get(id);
+          tx_row["unixTime"] = "0";
+          tx.get("tags").forEach((tag) => {
+            let key = tag.get("name", { decode: true, string: true });
+            let value = tag.get("value", { decode: true, string: true });
+            if (key === "Unix-Time") tx_row["unixTime"] = value;
+          });
+
+          tx_row["id"] = id;
+          tx_row["tx_status"] = await arweave.transactions.getStatus(id);
+          let to_address = await arweave.wallets.ownerToAddress(tx.owner);
+          const to_name = await this.getName(to_address);
+          tx_row["to"] = to_name;
+          tx_row["to_address"] = to_address;
+          tx_row["tx_qty"] = arweave.ar.winstonToAr(tx.quantity);
+          return tx_row;
+        })
+      );
+    }
+
+    tx_rows.sort((a, b) => Number(b.unixTime) - Number(a.unixTime));
+    return tx_rows;
+  };
+
   static starredMail = async (mailTxId, wallet, walletAddress) => {
     const starredMail = {
       time: Math.round(new Date().getTime() / 1000),

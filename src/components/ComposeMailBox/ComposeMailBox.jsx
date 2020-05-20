@@ -45,6 +45,7 @@ function ComposeMailBox() {
         subject: subject,
         body: content,
         tx_qty: tokens === "" ? "0" : tokens,
+        attachments,
         unixTime: Math.round(new Date().getTime() / 1000),
         isDraft: true,
       };
@@ -138,6 +139,23 @@ function ComposeMailBox() {
         wallet,
         mailTagUnixTime
       );
+      if(selectedDraft.id) {
+        let sessionDrafts = sessionStorage.getItem("draftMails");
+        let drafts;
+
+        if (sessionDrafts !== null) {
+          drafts = JSON.parse(sessionDrafts);
+        } else {
+          drafts = [];
+        }
+        drafts = drafts.filter((draft) => draft.id !== selectedDraft.id);
+        selectMail(null);
+        sessionStorage.setItem(
+          "draftMails",
+          JSON.stringify(drafts)
+        );
+        setDraftMails(drafts);
+      }
       setRecipient("");
       setSubject("");
       setTokens("");
@@ -221,7 +239,7 @@ function ComposeMailBox() {
               <span className="compose-body-attachments-icon">
                 <FontAwesomeIcon icon={faLink} />
               </span>
-              <span>6 Attachments</span>
+              <span>{attachments.length} Attachments</span>
             </div>
             <div className="compose-body-attachments-body">
               {attachments.map((attachment, i) => (
