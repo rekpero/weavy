@@ -73,7 +73,7 @@
               margin-left: 1em;
               .view-mail-body-content-wallet-icon {
                 margin-right: 0.5em;
-              }              
+              }
             }
           }
           .view-mail-body-content-user-reply {
@@ -159,7 +159,6 @@
             flex: 1 1;
           }
         }
-        
 
         .view-mail-body-content-reply-container {
           .mail-editor {
@@ -219,14 +218,14 @@
               display: flex;
               justify-content: center;
               border-radius: 50%;
-              top: 10px;
+              top: 12px;
               left: 116px;
               cursor: pointer;
               color: var(--labelColor);
               &:hover {
                 background-color: var(--hoverBackground);
               }
-    
+
               .mail-link-input {
                 position: absolute;
                 top: 0;
@@ -269,7 +268,7 @@
               font-size: 13px;
             }
           }
-    
+
           .compose-body-attachments-body {
             display: flex;
             flex-direction: column;
@@ -283,7 +282,7 @@
               border-radius: 6px;
               border: 1px solid #c7c7c791;
               margin-bottom: 4px;
-    
+
               .attachments-item-icon-container {
                 display: flex;
                 .file-type-icon {
@@ -303,12 +302,12 @@
                   overflow: hidden;
                   text-overflow: ellipsis;
                 }
-    
+
                 .attachments-item-size {
                   font-size: 12px;
                 }
               }
-    
+
               .mail-trash {
                 height: 24px;
                 width: 24px;
@@ -404,12 +403,11 @@ $information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
             word-break: break-all;
           }
 
-          
           .view-mail-body-content-user {
             align-items: inherit !important;
             flex-direction: column;
             text-align: left;
-            
+
             .view-mail-body-content-user-name {
               font-size: 13px !important;
             }
@@ -471,12 +469,11 @@ $information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
             word-break: break-all;
           }
 
-          
           .view-mail-body-content-user {
             align-items: inherit !important;
             flex-direction: column;
             text-align: left;
-            
+
             .view-mail-body-content-user-name {
               font-size: 13px !important;
             }

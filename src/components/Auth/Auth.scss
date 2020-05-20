@@ -22,6 +22,22 @@
   color: var(--labelColor);
 
   .widget-main-container {
+    position: relative;
+    .back-button {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 36px;
+      width: 36px;
+      border-radius: 10px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      &:hover {
+        background-color: var(--hoverBackground);
+      }
+    }
     .widget-container {
       text-align: center;
 
@@ -29,16 +45,21 @@
         font-size: 36px;
         font-weight: 500;
         margin: 1em 0em;
+        font-family: var(--appNameFont);
+        color: var(--themeColor);
+        font-weight: 800;
       }
 
       .wallet-input-field {
         position: relative;
         margin: 0px 6em;
         min-height: 200px;
-        border: 2px dashed;
+        border: 2px dashed var(--themeColor);
         display: flex;
         justify-content: center;
         align-items: center;
+        border-radius: 4px;
+        color: var(--themeColor);
         .wallet-file-import {
           position: absolute;
           top: 0;
@@ -56,6 +77,10 @@
         font-size: 15px;
         div:nth-last-child(1) {
           margin-top: 0.75em;
+        }
+
+        b {
+          color: var(--themeColor);
         }
       }
       .get-wallet-container {
@@ -89,7 +114,6 @@
       }
     }
   }
-
 }
 
 $information-phone: "only screen and (max-width : 414px)";
@@ -109,4 +133,3 @@ $information-pad: "only screen and (max-width : 768px) and (min-width: 414px)";
     }
   }
 }
-

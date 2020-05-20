@@ -1,7 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 import "./ComposeMailBox.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faMinus, faTrash, faLink } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimes,
+  faMinus,
+  faTrash,
+  faLink,
+} from "@fortawesome/free-solid-svg-icons";
 import MailEditor from "../MailEditor";
 import { ActionContext, StateContext } from "../../hook";
 import { ArweaveService, CryptoService, IPFSService } from "../../services";
@@ -21,7 +26,9 @@ function ComposeMailBox() {
   const [subject, setSubject] = React.useState(selectedDraft.subject);
   const [tokens, setTokens] = React.useState(selectedDraft.tx_qty);
   const [content, setContent] = React.useState(selectedDraft.body);
-  const [attachments, setAttachments] = React.useState(selectedDraft.attachments)
+  const [attachments, setAttachments] = React.useState(
+    selectedDraft.attachments
+  );
 
   const checkEmptyContent = (content) => {
     if (
@@ -33,7 +40,6 @@ function ComposeMailBox() {
     }
     return false;
   };
-
 
   const saveAndClose = () => {
     if (recipient || subject || !checkEmptyContent(content) || tokens) {
@@ -79,19 +85,18 @@ function ComposeMailBox() {
   };
 
   const attachFile = (e) => {
-    setNotification("File attaching...")
+    setNotification("File attaching...");
     const file = e.target.files[0];
-    let reader = new window.FileReader()
-    reader.readAsArrayBuffer(file)
-    reader.onloadend = () => convertToBuffer(reader, file)
-
-  }
+    let reader = new window.FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onloadend = () => convertToBuffer(reader, file);
+  };
   const convertToBuffer = async (reader, file) => {
     const buffer = await Buffer.from(reader.result);
     const hash = await IPFSService.uploadAttachment(buffer);
     const randomID = (Math.random() * 1e32).toString(36).substring(0, 10);
     const attachmentUnixTime = Math.round(new Date().getTime() / 1000);
-    const lastDot = file.name.lastIndexOf('.');
+    const lastDot = file.name.lastIndexOf(".");
     const ext = file.name.substring(lastDot + 1);
     const attachment = {
       id: randomID,
@@ -99,10 +104,10 @@ function ComposeMailBox() {
       timestamp: attachmentUnixTime,
       type: ext,
       size: file.size,
-      hash
-    }
-    setAttachments([...attachments, attachment])
-    setNotification("File attached.")
+      hash,
+    };
+    setAttachments([...attachments, attachment]);
+    setNotification("File attached.");
   };
 
   const sendMail = async () => {
@@ -125,43 +130,44 @@ function ComposeMailBox() {
       }
       const stringifySubject = JSON.stringify({
         subject,
-        attachments
-      })
+        attachments,
+      });
       const finalContent = await CryptoService.encrypt_mail(
         stringifyContent,
         stringifySubject,
         pub_key
       );
-      await ArweaveService.sendMail(
+      const res = await ArweaveService.sendMail(
         recipient,
         finalTokens,
         finalContent,
         wallet,
         mailTagUnixTime
       );
-      if(selectedDraft.id) {
-        let sessionDrafts = sessionStorage.getItem("draftMails");
-        let drafts;
+      if (res.status === "error") {
+        setNotification(res.msg);
+      } else {
+        if (selectedDraft.id) {
+          let sessionDrafts = sessionStorage.getItem("draftMails");
+          let drafts;
 
-        if (sessionDrafts !== null) {
-          drafts = JSON.parse(sessionDrafts);
-        } else {
-          drafts = [];
+          if (sessionDrafts !== null) {
+            drafts = JSON.parse(sessionDrafts);
+          } else {
+            drafts = [];
+          }
+          drafts = drafts.filter((draft) => draft.id !== selectedDraft.id);
+          selectMail(null);
+          sessionStorage.setItem("draftMails", JSON.stringify(drafts));
+          setDraftMails(drafts);
         }
-        drafts = drafts.filter((draft) => draft.id !== selectedDraft.id);
-        selectMail(null);
-        sessionStorage.setItem(
-          "draftMails",
-          JSON.stringify(drafts)
-        );
-        setDraftMails(drafts);
+        setRecipient("");
+        setSubject("");
+        setTokens("");
+        setContent("");
+        toggleComposeMail(false);
+        setNotification(res.msg);
       }
-      setRecipient("");
-      setSubject("");
-      setTokens("");
-      setContent("");
-      toggleComposeMail(false);
-      setNotification("Mail has been sent");
     } else {
       setNotification("Please add a recipient");
     }
@@ -170,13 +176,16 @@ function ComposeMailBox() {
   const getFileTypeIcon = (fileType) => {
     try {
       return (
-        <img src={require(`../../assets/icons/${fileType}.svg`)} alt="file-icon" className="file-type-icon" />
-      )
+        <img
+          src={require(`../../assets/icons/${fileType}.svg`)}
+          alt="file-icon"
+          className="file-type-icon"
+        />
+      );
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
-
+  };
 
   return (
     <div className="compose-mail-box">
@@ -234,30 +243,36 @@ function ComposeMailBox() {
               content={content}
             />
           </div>
-          {attachments.length ? <div className="compose-body-attachments-container">
-            <div className="compose-body-attachments-header-container">
-              <span className="compose-body-attachments-icon">
-                <FontAwesomeIcon icon={faLink} />
-              </span>
-              <span>{attachments.length} Attachments</span>
+          {attachments.length ? (
+            <div className="compose-body-attachments-container">
+              <div className="compose-body-attachments-header-container">
+                <span className="compose-body-attachments-icon">
+                  <FontAwesomeIcon icon={faLink} />
+                </span>
+                <span>{attachments.length} Attachments</span>
+              </div>
+              <div className="compose-body-attachments-body">
+                {attachments.map((attachment, i) => (
+                  <div key={i} className="attachments-item">
+                    <div className="attachments-item-icon-container">
+                      {getFileTypeIcon(attachment.type)}
+                    </div>
+                    <div className="attachments-item-details-container">
+                      <div className="attachments-item-name">
+                        {attachment.name}
+                      </div>
+                      <div className="attachments-item-size">
+                        {parseFileSize(attachment.size)}
+                      </div>
+                    </div>
+                    <div className="mail-trash">
+                      <FontAwesomeIcon icon={faTrash} />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="compose-body-attachments-body">
-              {attachments.map((attachment, i) => (
-                <div key={i} className="attachments-item">
-                  <div className="attachments-item-icon-container">
-                    {getFileTypeIcon(attachment.type)}
-                  </div>
-                  <div className="attachments-item-details-container">
-                    <div className="attachments-item-name">{attachment.name}</div>
-                    <div className="attachments-item-size">{parseFileSize(attachment.size)}</div>
-                  </div>
-                  <div className="mail-trash">
-                    <FontAwesomeIcon icon={faTrash} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div> : null}
+          ) : null}
           <div className="compose-body-buttons-container">
             <div className="send-button-container">
               <button
@@ -269,7 +284,11 @@ function ComposeMailBox() {
               </button>
               <span className="mail-link">
                 <FontAwesomeIcon icon={faLink} />
-                <input type="file" className="mail-link-input" onChange={attachFile} />
+                <input
+                  type="file"
+                  className="mail-link-input"
+                  onChange={attachFile}
+                />
               </span>
             </div>
             <div>

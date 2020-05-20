@@ -28,12 +28,17 @@ export const AppProvider = (props) => {
             ...prevState,
             wallet: null,
             walletAddress: "",
-            userName: ""
+            userName: "",
           };
         case "TOGGLE_COMPOSE_MAIL":
           return {
             ...prevState,
             openComposeMail: action.open,
+          };
+        case "TOGGLE_LANDING":
+          return {
+            ...prevState,
+            isLanding: action.isLanding,
           };
         case "ALL_MAIL_FETCHED":
           return {
@@ -120,6 +125,7 @@ export const AppProvider = (props) => {
       }
     },
     {
+      isLanding: !JSON.parse(sessionStorage.getItem("isNotLanding")),
       isMailLoading: true,
       wallet: JSON.parse(sessionStorage.getItem("wallet")),
       walletAddress: sessionStorage.getItem("walletAddress"),
@@ -166,37 +172,39 @@ export const AppProvider = (props) => {
     () => ({
       signIn: async (pData) => {
         pData.userName = await ArweaveService.getName(pData.walletAddress);
-        console.log(pData.userName)
         sessionStorage.setItem(
           "wallet",
           JSON.stringify(pData.walletPrivateKey)
         );
-        sessionStorage.setItem(
-          "walletAddress",
-          pData.walletAddress
-        );
-        sessionStorage.setItem(
-          "userName",
-          pData.userName
-        );
+        sessionStorage.setItem("walletAddress", pData.walletAddress);
+        sessionStorage.setItem("userName", pData.userName);
         dispatch({ type: "SIGN_IN", wallet: pData });
       },
       signOut: (refreshMailTimer) => {
         sessionStorage.removeItem("wallet");
         sessionStorage.removeItem("walletAddress");
         sessionStorage.removeItem("userName");
+        sessionStorage.removeItem("isNotLanding");
         clearInterval(refreshMailTimer);
         dispatch({ type: "SIGN_OUT" });
+        dispatch({ type: "TOGGLE_LANDING", isLanding: true });
         dispatch({ type: "SET_FIRST_TIME", firstTime: true });
       },
       restoreWallet: () => {
-        console.log(sessionStorage.getItem("userName"))
         const data = {
           walletPrivateKey: JSON.parse(sessionStorage.getItem("wallet")),
           walletAddress: sessionStorage.getItem("walletAddress"),
           userName: sessionStorage.getItem("userName"),
         };
         dispatch({ type: "RESTORE_TOKEN", wallet: data });
+      },
+      toggleLandingPage: (landingPage) => {
+        if (landingPage) {
+          sessionStorage.setItem("isNotLanding", JSON.stringify(landingPage));
+        } else {
+          sessionStorage.removeItem("isNotLanding");
+        }
+        dispatch({ type: "TOGGLE_LANDING", isLanding: !landingPage });
       },
       toggleComposeMail: (pFlag) => {
         dispatch({ type: "TOGGLE_COMPOSE_MAIL", open: pFlag });
@@ -230,7 +238,6 @@ export const AppProvider = (props) => {
         const sentMails = await ArweaveService.refreshOutbox(
           sessionStorage.getItem("walletAddress")
         );
-        console.log(sentMails)
         dispatch({ type: "SET_SENT_MAIL", sentMails });
         dispatch({ type: "SET_STARRED_MAIL", starredMails });
         lastSyncTime = moment().toString();
@@ -304,6 +311,7 @@ export const AppProvider = (props) => {
         dispatch({ type: "SET_PAGINATION_CONFIG", paginationConfig });
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
   return (

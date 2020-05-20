@@ -1,38 +1,39 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./App.scss";
-// import Home from './components/Home'
 import Auth from "./components/Auth/Auth";
 import Header from "./components/Header";
 import Home from "./components/Home";
-import { StateContext, ActionContext } from "./hook";
+import { StateContext } from "./hook";
 import Loader from "./components/Loader";
+import Landing from "./components/Landing/Landing";
 
 function App() {
-  const { wallet, firstTimeLoader } = React.useContext(StateContext);
-  const { restoreWallet } = React.useContext(ActionContext);
-
-  useEffect(() => {
-    // restoreWallet();
-  }, []);
+  const { wallet, firstTimeLoader, isLanding } = React.useContext(StateContext);
 
   return (
-    <div className="App">
-      {wallet ? (
-        firstTimeLoader ? (
-          <div className="mail-loader-container">
-            <Loader loaderType="box"></Loader>
-            <div className="mail-loader-text">Loading...</div>
-          </div>
-        ) : (
-          <>
-            <Header></Header>
-            <Home></Home>
-          </>
-        )
+    <>
+      {!isLanding ? (
+        <div className="App">
+          {wallet ? (
+            firstTimeLoader ? (
+              <div className="mail-loader-container">
+                <Loader loaderType="box"></Loader>
+                <div className="mail-loader-text">Loading...</div>
+              </div>
+            ) : (
+              <>
+                <Header></Header>
+                <Home></Home>
+              </>
+            )
+          ) : (
+            <Auth></Auth>
+          )}
+        </div>
       ) : (
-        <Auth></Auth>
+        <Landing></Landing>
       )}
-    </div>
+    </>
   );
 }
 

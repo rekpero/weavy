@@ -10,7 +10,7 @@
       padding-inline-start: 1em;
       font-size: 32px;
       font-weight: 800;
-      color: var(--textColor);
+      color: var(--themeColor);
       font-family: var(--appNameFont);
     }
   }
@@ -158,7 +158,7 @@ $information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
       margin-right: 10px;
       .logo-name {
         padding-inline-start: 1em !important;
-    font-size: 18px !important;
+        font-size: 18px !important;
       }
     }
     .search-bar-container {
@@ -166,17 +166,17 @@ $information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
 
       .search-bar {
         width: 75% !important;
-    padding: 0.5em 1em !important;
-    .search-bar-input {
-      font-size: 14px !important;
-      padding-inline-start: 0.5em !important;
-      width: 100% !important;
-    }
+        padding: 0.5em 1em !important;
+        .search-bar-input {
+          font-size: 14px !important;
+          padding-inline-start: 0.5em !important;
+          width: 100% !important;
+        }
       }
     }
     .user-profile-blockie-icon {
       height: 32px !important;
-      width: 32px !important;  
+      width: 32px !important;
     }
 
     .toolbar-dropdown-box {
@@ -192,7 +192,7 @@ $information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
       margin-right: 10px;
       .logo-name {
         padding-inline-start: 1em !important;
-    font-size: 24px !important;
+        font-size: 24px !important;
       }
     }
     .search-bar-container {
@@ -200,17 +200,17 @@ $information-pad: "only screen and (max-width : 1024px) and (min-width: 414px)";
 
       .search-bar {
         width: 75% !important;
-    padding: 0.5em 1em !important;
-    .search-bar-input {
-      font-size: 16px !important;
-      padding-inline-start: 0.5em !important;
-      width: 100% !important;
-    }
+        padding: 0.5em 1em !important;
+        .search-bar-input {
+          font-size: 16px !important;
+          padding-inline-start: 0.5em !important;
+          width: 100% !important;
+        }
       }
     }
     .user-profile-blockie-icon {
       height: 32px !important;
-      width: 32px !important;  
+      width: 32px !important;
     }
     .toolbar-dropdown-box {
       font-size: 12px !important;

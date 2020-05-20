@@ -46,6 +46,15 @@ export default class ArweaveService {
     wallet,
     mailTagUnixTime
   ) => {
+    const walletAddress = await this.getWalletAddress(wallet);
+    const walletBalance = await this.getWalletAmount(walletAddress);
+    const walletBalanceAr = this.convertToAr(walletBalance);
+    if (walletBalanceAr < 0.01000001) {
+      return {
+        status: "error",
+        msg: "Error: Insufficient balance to send mail",
+      };
+    }
     var tx = await arweave.createTransaction(
       {
         target: address,
@@ -54,13 +63,33 @@ export default class ArweaveService {
       },
       wallet
     );
-    console.log(tx);
 
     tx.addTag("App-Name", APP_NAME);
     tx.addTag("App-Version", APP_VERSION);
     tx.addTag("Unix-Time", mailTagUnixTime);
     await arweave.transactions.sign(tx, wallet);
     await arweave.transactions.post(tx);
+    return {
+      status: "success",
+      msg: "Mail has been sent",
+    };
+  };
+
+  static sendScreen = async (e, wallet) => {
+    console.log(e.target.files[0]);
+    let fileReader = new FileReader();
+    fileReader.onloadend = async (e) => {
+      const imgBuffer = e.target.result;
+      var tx = await arweave.createTransaction(
+        { data: new Uint8Array(imgBuffer) },
+        wallet
+      );
+      tx.addTag("Content-Type", "image/svg");
+      await arweave.transactions.sign(tx, wallet);
+      await arweave.transactions.post(tx);
+      console.log(tx);
+    };
+    fileReader.readAsArrayBuffer(e.target.files[0]);
   };
 
   static refreshInbox = async (wallet) => {
@@ -121,7 +150,6 @@ export default class ArweaveService {
           );
           try {
             mail = JSON.parse(mail);
-            console.log(mail)
           } catch (e) {
             console.log(e);
           }
@@ -167,7 +195,6 @@ export default class ArweaveService {
   };
 
   static refreshOutbox = async (walletAddress) => {
-
     let get_mail_query = {
       op: "and",
       expr1: {
