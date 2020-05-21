@@ -34,6 +34,10 @@ weavy offers an enhanced experience over the [original Weavemail protocol implem
 
 ## Live
 weavy. is live at [https://arweave.net/kvUNtyiNhcYR834RF-FlMV0E4Kduud3E-enf_got4kI](https://arweave.net/kvUNtyiNhcYR834RF-FlMV0E4Kduud3E-enf_got4kI)
+
 ## Additional info
 * [Arweave.org](https://arweave.org)
 * [Weavemail](https://github.com/ArweaveTeam/weavemail)
+
+## Credits
+Special credits to [@Anish-Agnihotri](https://github.com/Anish-Agnihotri), Great work with the landing page content and app too tbh 🚀
