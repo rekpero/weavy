@@ -19,7 +19,6 @@ function Auth() {
     const jwk = JSON.parse(e.target.result);
     let address = await ArweaveService.getWalletAddress(jwk);
     signIn({ walletPrivateKey: jwk, walletAddress: address });
-    // props.setWallet(jwk, address);
   };
 
   const goBackHome = () => {

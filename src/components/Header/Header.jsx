@@ -5,6 +5,8 @@ import {
   faSearch,
   faCopy,
   faExternalLinkSquareAlt,
+  faBell,
+  faBellSlash
 } from "@fortawesome/free-solid-svg-icons";
 import makeBlockie from "ethereum-blockies-base64";
 import { ActionContext, StateContext } from "../../hook";
@@ -13,10 +15,11 @@ import { shortenAddress } from "../../utils";
 
 function Header() {
   const { signOut, searchMails } = React.useContext(ActionContext);
-  const { walletAddress, backupMails, userName, refreshMailTimer } = React.useContext(StateContext);
+  const { walletAddress, backupMails, userName, refreshMailTimer, notifications, mailWatcher } = React.useContext(StateContext);
   const [showDropdown, setShowDropdown] = React.useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] = React.useState(false);
   const logout = () => {
-    signOut(refreshMailTimer);
+    signOut(refreshMailTimer, mailWatcher);
   };
   const copyWalletAddress = () => {
     copy(walletAddress);
@@ -44,9 +47,9 @@ function Header() {
         </div>
       </div>
       <div className="user-profile-container">
-        {/* <div className="notification-container">
+        <div className="notification-container" onClick={(e) => setShowNotificationDropdown(!showNotificationDropdown)}>
           <FontAwesomeIcon icon={faBell} />
-        </div> */}
+        </div>
         <div onClick={(e) => setShowDropdown(!showDropdown)}>
           <img
             src={makeBlockie("jeNnvxnU0qguF-xj3k1hMYlSHgEOMAxtpeYBwKy1r9k")}
@@ -93,6 +96,31 @@ function Header() {
               Logout
             </button>
           </div>
+        </div>
+      )}
+      {showNotificationDropdown && (
+        <div
+          className="dropdown-overlay"
+          onClick={(e) => setShowNotificationDropdown(false)}
+        ></div>
+      )}
+      {showNotificationDropdown && (
+        <div className="toolbar-notification-dropdown-box">
+          {notifications.length ? notifications.map((notification, i) => <div className="notification-item" key={i}>
+          <a className="notification-item-link"
+            href={`https://viewblock.io/arweave/tx/${notification.txId}`}
+            target="_blank"
+            rel="noopener noreferrer"><b>{notification.message}</b>{" "}TxId: 
+            <span className="mail-tx-id">{notification.txId}</span>
+            </a>
+            </div>) : (
+              <div className="no-notifications">
+                <div className="no-notifications-icon">
+                  <FontAwesomeIcon icon={faBellSlash} />
+                </div>
+                <div>No notifications to show</div>
+                </div>
+              )}
         </div>
       )}
     </div>

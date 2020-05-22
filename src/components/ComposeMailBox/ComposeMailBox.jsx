@@ -18,8 +18,10 @@ function ComposeMailBox() {
     setNotification,
     setDraftMails,
     selectMail,
+    setCurrentSendingMails,
+    setNotifications
   } = React.useContext(ActionContext);
-  const { wallet, selectedDraft } = React.useContext(StateContext);
+  const { wallet, selectedDraft, currentSendingMail, notifications } = React.useContext(StateContext);
 
   const [collapse, setCollapse] = React.useState(false);
   const [recipient, setRecipient] = React.useState(selectedDraft.to);
@@ -30,6 +32,7 @@ function ComposeMailBox() {
     selectedDraft.attachments
   );
 
+  // check empty content
   const checkEmptyContent = (content) => {
     if (
       content.length === 1 &&
@@ -41,6 +44,7 @@ function ComposeMailBox() {
     return false;
   };
 
+  // save the mail to draft and session
   const saveAndClose = () => {
     if (recipient || subject || !checkEmptyContent(content) || tokens) {
       setNotification("Saving mail as draft...");
@@ -76,6 +80,8 @@ function ComposeMailBox() {
     }
     toggleComposeMail(false);
   };
+
+  // close the compose pannel
   const closeCompose = () => {
     setRecipient("");
     setSubject("");
@@ -85,6 +91,7 @@ function ComposeMailBox() {
     toggleComposeMail(false);
   };
 
+  // attach file to mail
   const attachFile = (e) => {
     setNotification("File attaching...");
     const file = e.target.files[0];
@@ -92,6 +99,8 @@ function ComposeMailBox() {
     reader.readAsArrayBuffer(file);
     reader.onloadend = () => convertToBuffer(reader, file);
   };
+
+  // convert file to buffer and put it to ipfs 
   const convertToBuffer = async (reader, file) => {
     const buffer = await Buffer.from(reader.result);
     const hash = await IPFSService.uploadAttachment(buffer);
@@ -111,9 +120,10 @@ function ComposeMailBox() {
     setNotification("File attached.");
   };
 
+  // send the mail
   const sendMail = async () => {
     if (recipient) {
-      setNotification("Sending mail...");
+      setNotification("Creating mail...");
       const stringifyContent = JSON.stringify(content);
       const mailTagUnixTime = Math.round(new Date().getTime() / 1000);
       let finalTokens = "";
@@ -123,21 +133,25 @@ function ComposeMailBox() {
         finalTokens = ArweaveService.convertToWinston(tokens);
       }
 
+      // get a public key
       var pub_key = await CryptoService.get_public_key(recipient);
 
       if (pub_key === undefined) {
-        alert("Recipient has to send a transaction to the network, first!");
+        setNotification("Recipient has to send a transaction to the network, first!");
         return;
       }
+      // strigify the subject and attachment
       const stringifySubject = JSON.stringify({
         subject,
         attachments,
       });
+      // encrypt the mail
       const finalContent = await CryptoService.encrypt_mail(
         stringifyContent,
         stringifySubject,
         pub_key
       );
+      // send the mail
       const res = await ArweaveService.sendMail(
         recipient,
         finalTokens,
@@ -145,6 +159,7 @@ function ComposeMailBox() {
         wallet,
         mailTagUnixTime
       );
+      // check if there is any error
       if (res.status === "error") {
         setNotification(res.msg);
       } else {
@@ -162,6 +177,7 @@ function ComposeMailBox() {
           sessionStorage.setItem("draftMails", JSON.stringify(drafts));
           setDraftMails(drafts);
         }
+        // close everything
         setRecipient("");
         setSubject("");
         setTokens("");
@@ -169,12 +185,21 @@ function ComposeMailBox() {
         setAttachments([]);
         toggleComposeMail(false);
         setNotification(res.msg);
+        // add the txid to watcher
+        setCurrentSendingMails([...currentSendingMail, res.id])
+        const notification = {
+          message: "Mail sending...",
+          txId: res.id
+        }
+        // set the notification
+        setNotifications([...notifications, notification]) 
       }
     } else {
       setNotification("Please add a recipient");
     }
   };
-
+  
+  // get file icon
   const getFileTypeIcon = (fileType) => {
     try {
       return (
@@ -189,6 +214,7 @@ function ComposeMailBox() {
     }
   };
 
+  // remove attachment
   const removeAttachment = (id) => {
     const finalAttachments = attachments.filter((attachment, i) => id !== i);
     setAttachments(finalAttachments);

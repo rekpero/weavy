@@ -50,6 +50,7 @@ function ViewMail() {
     },
   ]);
 
+  // sending reply same as send mail
   const sendReply = async () => {
     setNotification("Sending reply...");
     const recipient = selectedMail.from_address;
@@ -66,7 +67,7 @@ function ViewMail() {
     var pub_key = await CryptoService.get_public_key(recipient);
 
     if (pub_key === undefined) {
-      alert("Recipient has to send a transaction to the network, first!");
+      setNotification("Recipient has to send a transaction to the network, first!");
       return;
     }
     const stringifySubject = JSON.stringify({
@@ -91,6 +92,7 @@ function ViewMail() {
     setNotification("Reply has been sent");
   };
 
+  // send forward same as send mail
   const sendForward = async () => {
     setNotification("Sending forward...");
     const subject = selectedMail.subject;
@@ -105,7 +107,7 @@ function ViewMail() {
     var pub_key = await CryptoService.get_public_key(recipient);
 
     if (pub_key === undefined) {
-      alert("Recipient has to send a transaction to the network, first!");
+      setNotification("Recipient has to send a transaction to the network, first!");
       return;
     }
     const stringifySubject = JSON.stringify({
@@ -131,6 +133,7 @@ function ViewMail() {
     setNotification("Forward has been sent");
   };
 
+  // send mail to target
   const sendMail = async () => {
     if (selectedMail.to) {
       setNotification("Sending mail...");
@@ -143,21 +146,25 @@ function ViewMail() {
         finalTokens = ArweaveService.convertToWinston(selectedMail.tx_qty);
       }
 
+      // getting a public key
       var pub_key = await CryptoService.get_public_key(selectedMail.to);
 
       if (pub_key === undefined) {
-        alert("Recipient has to send a transaction to the network, first!");
+        setNotification("Recipient has to send a transaction to the network, first!");
         return;
       }
+      // adding attachment with subject
       const stringifySubject = JSON.stringify({
         subject: selectedMail.subject,
         attachments,
       });
+      // encrypt the mail
       const finalContent = await CryptoService.encrypt_mail(
         stringifyContent,
         stringifySubject,
         pub_key
       );
+      // send mail to arweave
       await ArweaveService.sendMail(
         selectedMail.to,
         finalTokens,
@@ -191,6 +198,7 @@ function ViewMail() {
     }
   };
 
+  // open forward panel
   const openForward = () => {
     setTokens(Number.parseFloat(selectedMail.tx_qty).toFixed(2) + "");
     setContent(selectedMail.body);
@@ -198,17 +206,20 @@ function ViewMail() {
     setShowForward(true);
   };
 
+  // starred the mail
   const starredMail = async (txId) => {
     setNotification("Starring mail...");
     await ArweaveService.starredMail(txId, wallet, walletAddress);
     setNotification("Mail has been starred");
   };
 
+  // open compose panel
   const openEditMail = () => {
     setSelectedDraftMails(selectedMail);
     toggleComposeMail(true);
   };
 
+  // delete draft mail
   const deleteDraftMail = () => {
     const finalDraftMail = draftMails.filter(
       (draft) => draft.id !== selectedMail.id
@@ -232,6 +243,7 @@ function ViewMail() {
     setNotification("Draft has been deleted");
   };
 
+  // get file icon store in cloudinary
   const getFileTypeIcon = (fileType) => {
     try {
       return (
@@ -245,12 +257,14 @@ function ViewMail() {
       console.log(err);
     }
   };
-
+  
+  // remove attachment
   const removeAttachment = (id) => {
     const finalAttachments = attachments.filter((attachment, i) => id !== i);
     setAttachments(finalAttachments);
   };
 
+  // attach file to mail
   const attachFile = (e) => {
     setNotification("File attaching...");
     const file = e.target.files[0];
@@ -258,6 +272,7 @@ function ViewMail() {
     reader.readAsArrayBuffer(file);
     reader.onloadend = () => convertToBuffer(reader, file);
   };
+  // converting attachment to buffer and get the ipfs hash
   const convertToBuffer = async (reader, file) => {
     const buffer = await Buffer.from(reader.result);
     const hash = await IPFSService.uploadAttachment(buffer);
@@ -277,6 +292,7 @@ function ViewMail() {
     setNotification("File attached.");
   };
 
+  // checking empty content
   const checkEmptyContent = (content) => {
     if (
       content.length === 1 &&
@@ -288,6 +304,7 @@ function ViewMail() {
     return false;
   };
 
+  // saving mails in session and put it to draft menu
   const saveAndClose = () => {
     if (
       showReply
@@ -341,6 +358,7 @@ function ViewMail() {
         </span>
       </div>
       <div className="view-mail-body-container">
+        {/* Left it for future scope */}
         {/* <div className="view-mail-body-item">
           <div className="view-mail-user-icon-container">
             <img

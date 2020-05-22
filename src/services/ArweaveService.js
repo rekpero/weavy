@@ -71,11 +71,13 @@ export default class ArweaveService {
     await arweave.transactions.post(tx);
     return {
       status: "success",
-      msg: "Mail has been sent",
+      msg: "Mail sending...",
+      id: tx.id
     };
   };
 
   static sendScreen = async (e, wallet) => {
+    //Not required just for testing
     console.log(e.target.files[0]);
     let fileReader = new FileReader();
     fileReader.onloadend = async (e) => {
@@ -113,6 +115,28 @@ export default class ArweaveService {
           op: "equals",
           expr1: "App-Version",
           expr2: APP_VERSION,
+        },
+      },
+    };
+
+    let get_mail_query_originals = {
+      op: "and",
+      expr1: {
+        op: "equals",
+        expr1: "to",
+        expr2: address,
+      },
+      expr2: {
+        op: "and",
+        expr1: {
+          op: "equals",
+          expr1: "App-Name",
+          expr2: APP_NAME,
+        },
+        expr2: {
+          op: "equals",
+          expr1: "App-Version",
+          expr2: '0.0.2',
         },
       },
     };
@@ -190,8 +214,86 @@ export default class ArweaveService {
       );
     }
 
-    tx_rows.sort((a, b) => Number(b.unixTime) - Number(a.unixTime));
-    return tx_rows;
+
+    const resOriginal = await arweave.api.post(`arql`, get_mail_query_originals);
+
+    var tx_rows_original = [];
+    if (resOriginal.data === "") {
+      tx_rows_original = [];
+    } else {
+      tx_rows_original = await Promise.all(
+        resOriginal.data.map(async (id, i) => {
+          let tx_row = {};
+          let tx = await arweave.transactions.get(id);
+          tx_row["unixTime"] = "0";
+          tx.get("tags").forEach((tag) => {
+            let key = tag.get("name", { decode: true, string: true });
+            let value = tag.get("value", { decode: true, string: true });
+            if (key === "Unix-Time") tx_row["unixTime"] = value;
+          });
+
+          tx_row["id"] = id;
+          tx_row["tx_status"] = await arweave.transactions.getStatus(id);
+          let from_address = await arweave.wallets.ownerToAddress(tx.owner);
+          const from_name = await this.getName(from_address);
+          tx_row["from"] = from_name;
+          tx_row["from_address"] = from_address;
+          tx_row["tx_qty"] = arweave.ar.winstonToAr(tx.quantity);
+          let key = await CryptoService.wallet_to_key(wallet);
+          let mail = arweave.utils.bufferToString(
+            await CryptoService.decrypt_mail(
+              arweave.utils.b64UrlToBuffer(tx.data),
+              key
+            )
+          );
+          try {
+            mail = JSON.parse(mail);
+          } catch (e) {
+            console.log(e);
+          }
+
+          // Upgrade old format.
+          if (typeof mail === "string") {
+            mail = {
+              body: mail,
+              subject: id,
+            };
+          }
+
+          console.log(mail)
+
+          // Validate
+          if (
+            typeof mail !== "object" ||
+            typeof mail.body !== "string" ||
+            typeof mail.subject !== "string"
+          ) {
+            console.error(mail);
+            throw new Error(`Unexpected mail format: ${mail}`);
+          }
+
+          tx_row["subject"] = mail.subject;
+          tx_row["attachments"] = [];
+          try {
+            tx_row["body"] = JSON.parse(mail.body);
+          } catch (err) {
+            const body = [
+              {
+                type: "paragraph",
+                children: [{ text: mail.body }],
+              },
+            ];
+            tx_row["body"] = body;
+          }
+          return tx_row;
+        })
+      );
+    }
+
+    const final_tx_rows = [...tx_rows_original, ...tx_rows]
+
+    final_tx_rows.sort((a, b) => Number(b.unixTime) - Number(a.unixTime));
+    return final_tx_rows;
   };
 
   static refreshOutbox = async (walletAddress) => {
@@ -213,6 +315,28 @@ export default class ArweaveService {
           op: "equals",
           expr1: "App-Version",
           expr2: APP_VERSION,
+        },
+      },
+    };
+
+    let get_mail_query_originals = {
+      op: "and",
+      expr1: {
+        op: "equals",
+        expr1: "from",
+        expr2: walletAddress,
+      },
+      expr2: {
+        op: "and",
+        expr1: {
+          op: "equals",
+          expr1: "App-Name",
+          expr2: APP_NAME,
+        },
+        expr2: {
+          op: "equals",
+          expr1: "App-Version",
+          expr2: '0.0.2',
         },
       },
     };
@@ -246,8 +370,39 @@ export default class ArweaveService {
       );
     }
 
-    tx_rows.sort((a, b) => Number(b.unixTime) - Number(a.unixTime));
-    return tx_rows;
+    const resOriginal = await arweave.api.post(`arql`, get_mail_query_originals);
+
+    var tx_rows_original = [];
+    if (resOriginal.data === "") {
+      tx_rows_original = [];
+    } else {
+      tx_rows_original = await Promise.all(
+        resOriginal.data.map(async (id, i) => {
+          let tx_row = {};
+          let tx = await arweave.transactions.get(id);
+          tx_row["unixTime"] = "0";
+          tx.get("tags").forEach((tag) => {
+            let key = tag.get("name", { decode: true, string: true });
+            let value = tag.get("value", { decode: true, string: true });
+            if (key === "Unix-Time") tx_row["unixTime"] = value;
+          });
+
+          tx_row["id"] = id;
+          tx_row["tx_status"] = await arweave.transactions.getStatus(id);
+          let to_address = await arweave.wallets.ownerToAddress(tx.owner);
+          const to_name = await this.getName(to_address);
+          tx_row["to"] = to_name;
+          tx_row["to_address"] = to_address;
+          tx_row["tx_qty"] = arweave.ar.winstonToAr(tx.quantity);
+          return tx_row;
+        })
+      );
+    }
+
+    const final_tx_rows = [...tx_rows, ...tx_rows_original]
+
+    final_tx_rows.sort((a, b) => Number(b.unixTime) - Number(a.unixTime));
+    return final_tx_rows;
   };
 
   static starredMail = async (mailTxId, wallet, walletAddress) => {

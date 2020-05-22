@@ -6,7 +6,7 @@ import { ActionContext, StateContext } from "../../hook";
 
 function Sidebar() {
   const { toggleComposeMail, selectMenu } = React.useContext(ActionContext);
-  const { selectedMenu } = React.useContext(StateContext);
+  const { selectedMenu, backupDraftMails, backupSentMails, backupStarredMails, backupMails } = React.useContext(StateContext);
 
   return (
     <div className="sidebar">
@@ -19,7 +19,7 @@ function Sidebar() {
       </button>
       <div
         className={`sidebar-item ${selectedMenu === "inbox" ? "selected" : ""}`}
-        onClick={(e) => selectMenu("inbox")}
+        onClick={(e) => selectMenu("inbox", backupMails, backupDraftMails, backupSentMails, backupStarredMails)}
       >
         <span className="sidebar-item-main">
           <span>
@@ -36,7 +36,7 @@ function Sidebar() {
         className={`sidebar-item ${
           selectedMenu === "starred" ? "selected" : ""
         }`}
-        onClick={(e) => selectMenu("starred")}
+        onClick={(e) => selectMenu("starred", backupMails, backupDraftMails, backupSentMails, backupStarredMails)}
       >
         <span className="sidebar-item-main">
           <span>
@@ -51,7 +51,7 @@ function Sidebar() {
       </div>
       <div
         className={`sidebar-item ${selectedMenu === "sent" ? "selected" : ""}`}
-        onClick={(e) => selectMenu("sent")}
+        onClick={(e) => selectMenu("sent", backupMails, backupDraftMails, backupSentMails, backupStarredMails)}
       >
         <span className="sidebar-item-main">
           <span>
@@ -63,7 +63,7 @@ function Sidebar() {
       </div>
       <div
         className={`sidebar-item ${selectedMenu === "draft" ? "selected" : ""}`}
-        onClick={(e) => selectMenu("draft")}
+        onClick={(e) => selectMenu("draft", backupMails, backupDraftMails, backupSentMails, backupStarredMails)}
       >
         <span className="sidebar-item-main">
           <span>
