@@ -34,7 +34,7 @@ weavy offers an enhanced experience over the [original Weavemail protocol implem
 2. When you click on a message to view it, the transaction is pulled from the network and decrypted using your private key.
 
 ## Live
-weavy. is live at [https://arweave.net/kvUNtyiNhcYR834RF-FlMV0E4Kduud3E-enf_got4kI](https://arweave.net/kvUNtyiNhcYR834RF-FlMV0E4Kduud3E-enf_got4kI)
+weavy. is live at [https://arweave.net/ojhOYPNfn8OmJmPtzu_cbQqds0avWH-Ilbr4ypAr8kE](https://arweave.net/ojhOYPNfn8OmJmPtzu_cbQqds0avWH-Ilbr4ypAr8kE)
 
 ## Additional info
 * [Arweave.org](https://arweave.org)
