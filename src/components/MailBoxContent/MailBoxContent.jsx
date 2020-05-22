@@ -27,6 +27,7 @@ function MailBoxContent() {
   } = React.useContext(StateContext);
   const { selectMail, setNotification } = React.useContext(ActionContext);
 
+  // starred the mail
   const starredMail = async (txId) => {
     setNotification("Starring mail...");
     await ArweaveService.starredMail(txId, wallet, walletAddress);
