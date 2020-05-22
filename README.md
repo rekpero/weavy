@@ -19,8 +19,9 @@ weavy offers an enhanced experience over the [original Weavemail protocol implem
 5. Star Mail and a separate starred box for viewing
 6. Mail Outbox for viewing sent mails
 7. Mobile-responsiveness (except landing page).
-8. Integrated Notifications
+8. Integrated Notifications with a mail sent watcher that let user know when the mail is mined
 9. Integrated ArweaveId
+10. Backward compatibility with the original weavemail version
 
 ## How does it work?
 
