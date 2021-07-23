@@ -45,4 +45,4 @@ weavy. is live at [https://arweave.net/ojhOYPNfn8OmJmPtzu_cbQqds0avWH-Ilbr4ypAr8
 ## Credits
 Special credits to [@Anish-Agnihotri](https://github.com/Anish-Agnihotri), Great work with the landing page content and app too tbh 🚀
 
-Test 9
+Test 10
