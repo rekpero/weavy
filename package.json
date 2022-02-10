@@ -16,7 +16,7 @@
     "ethereum-blockies-base64": "^1.0.2",
     "ipfs-api": "^26.1.2",
     "moment": "^2.25.3",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "react": "^16.13.1",
     "react-anchor-link-smooth-scroll": "^1.0.12",
     "react-dom": "^16.13.1",
